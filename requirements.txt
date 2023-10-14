@@ -3,3 +3,5 @@
 # pyglotaran-examples does not need to be installed as package
 ipykernel # needed to work with notebooks in VS Code
 pydantic<2
+pytest
+pytest-allclose
