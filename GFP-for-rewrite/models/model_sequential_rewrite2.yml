@@ -26,7 +26,7 @@ experiments:
     datasets:
       GFPppH2O:
         elements: [artifact, fast, slow]
-        element_scale: [1,1,scale.slow]
+        element_scale: [1, 1, scale.slow]
         activation:
           - type: gaussian
             compartments:
@@ -38,7 +38,7 @@ experiments:
             center_dispersion_coefficients: [irf.disp1, irf.disp2]
       GFPpdpH2O:
         elements: [artifact, artifact2, fast, slow]
-        element_scale: [1,1,1,scale.slow]
+        element_scale: [1, 1, 1, scale.slow]
         activation:
           - type: gaussian
             compartments:
@@ -52,8 +52,10 @@ experiments:
             compartments:
               artifact2: 1
               I: amp.dump
+              I1: amp.dump2
             center: irf.center2
             width: irf.width
             dispersion_center: irf.dispcenter
             center_dispersion_coefficients: [irf.disp1, irf.disp2]
             # model_dispersion_with_wavenumber: true
+            not_normalized_compartments: [A, I, I1, I2]
