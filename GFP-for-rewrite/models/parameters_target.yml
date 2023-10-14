@@ -1,0 +1,26 @@
+j:
+  - ['1', 1, {"expr": "1-$j.2"}]
+  - ['2', 0.5, {non-negative: False, vary: True}]
+  - ['0', 0.0, {non-negative: False, vary: False}]
+
+kinetic:
+  # - ['to_A2rel_from_A2',6.58372021, {non-negative: True, vary: False}]
+  - ['to_I_from_A2', 0.08, {non-negative: True, vary: True}]
+  # - ['to_A1_from_A2rel', 4.36121597, {non-negative: True, vary: False}]
+  # - ['to_I_from_A2rel', 1.6, {non-negative: True, vary: False}]
+  - ['to_I_from_A1', 0.4, {non-negative: True, vary: True}]
+  - ['to_I2_from_I',  0.335E-03, {non-negative: True, vary: False}]
+  - ['from_I2', 0.2528773854E-02, {non-negative: True, vary: False}]
+
+irf:
+  - ['center', 0.036, {non-negative: False, vary: True}]
+  - ['width', 8.33354052E-02, {non-negative: True, vary: True}]
+  - ['dispcenter',500.0, {non-negative: False, vary: False}]
+  - ['disp1', -0.327    , {non-negative: False, vary: True}]
+  - ['disp2', -0.1915, {non-negative: False, vary: True}]
+  # - ['disp3', 8.26288015E-03, {non-negative: False, vary: True}]
+
+# artifact:
+#   - ['CAwidth', 1.47853307E-02, {non-negative: True, vary: True}]
+rel:
+  - ['r1', 1, {"vary": False}]

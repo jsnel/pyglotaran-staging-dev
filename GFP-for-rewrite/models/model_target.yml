@@ -1,0 +1,44 @@
+# type: doas
+
+initial_concentration:
+  j1:
+    compartments: [A2, A1, I2,  I]
+    parameters: [j.2, j.1, j.0,  j.0]
+
+k_matrix:
+  k1:
+    matrix:
+      "(I, A2)": kinetic.to_I_from_A2
+      "(I, A1)": kinetic.to_I_from_A1
+      "(I2, I)": kinetic.to_I2_from_I
+      "(I2, I2)": kinetic.from_I2
+
+megacomplex:
+  decay:
+    type: decay
+    k_matrix: [k1]
+  artifact:
+    type: coherent-artifact
+    order: 1
+    # width: artifact.CAwidth
+
+clp_relations:
+  - source: A1
+    target: A2
+    parameter: rel.r1
+    interval: [[0, 1000]]
+
+irf:
+  irf1:
+    type: spectral-gaussian
+    center: irf.center
+    width: irf.width
+    dispersion_center: irf.dispcenter
+    center_dispersion_coefficients: [irf.disp1, irf.disp2]
+    model_dispersion_with_wavenumber: true
+
+dataset:
+  GFPppH2O:
+    initial_concentration: j1
+    megacomplex: [decay, artifact]
+    irf: irf1
