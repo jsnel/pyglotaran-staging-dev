@@ -1,0 +1,30 @@
+amp:
+  - ['dump', -0.4, {max: 0, vary: True}]
+
+scale:
+  - ['slow', 0.4, {min: 0, vary: True}]
+
+kinetic:
+  # - ['to_S2rel_from_S2',6.58372021, {min: 0, vary: False}]
+  - ['to_I_from_A', 0.4, {min: 0, vary: True}]
+  - ['to_I_from_A_slow', 0.09, {min: 0, vary: True}]
+  # - ['to_S1_from_S2rel', 4.36121597, {min: 0, vary: False}]
+  # - ['to_T1hot_from_S2rel', 1.6, {min: 0, vary: False}]
+  - ['to_I1_from_I', 0.335E-03, {min: 0, vary: True}]
+  - ['to_I2_from_I1', 0.3 , {min: 0, vary: False}]
+  - ['from_I2', 0.2528773854E-02, {min: 0, vary: False}]
+
+irf:
+  - ['center', 0.036, {non-negative: False, vary: True}]
+  # - ['delay', 20, {non-negative: False, vary: True}]
+  - ['center2', 20, {non-negative: False, vary: True}]
+  # expression gives bug
+  # - ['center2', 1,{expr: "$irf.center + $irf.delay"}]
+  - ['width', 8.33354052E-02, {min: 0, vary: True}]
+  - ['dispcenter',500.0, {non-negative: False, vary: False}]
+  - ['disp1', -0.327    , {non-negative: False, vary: True}]
+  - ['disp2', -0.1915, {non-negative: False, vary: True}]
+  # - ['disp3', 8.26288015E-03, {non-negative: False, vary: True}]
+
+# artifact:
+#   - ['CAwidth', 1.47853307E-02, {min: 0, vary: True}]

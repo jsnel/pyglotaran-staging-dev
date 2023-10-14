@@ -1,0 +1,59 @@
+# type: doas
+
+library:
+  fast:
+    type: kinetic
+    rates:
+      "(I, A)": kinetic.to_I_from_A
+      "(I1, I)": kinetic.to_I1_from_I
+      "(I2, I1)": kinetic.to_I2_from_I1
+      "(I2, I2)": kinetic.from_I2
+  slow:
+    type: kinetic
+    extends: [fast]
+    rates:
+      "(I, A)": kinetic.to_I_from_A_slow
+  artifact:
+    type: coherent-artifact
+    order: 1
+  artifact2:
+    type: coherent-artifact
+    order: 1
+    # width: artifact.CAwidth
+
+experiments:
+  myexp:
+    datasets:
+      GFPppH2O:
+        elements: [artifact, fast, slow]
+        element_scale: [1,1,scale.slow]
+        activation:
+          - type: gaussian
+            compartments:
+              artifact: 1
+              A: 1
+            center: irf.center
+            width: irf.width
+            dispersion_center: irf.dispcenter
+            center_dispersion_coefficients: [irf.disp1, irf.disp2]
+      GFPpdpH2O:
+        elements: [artifact, artifact2, fast, slow]
+        element_scale: [1,1,1,scale.slow]
+        activation:
+          - type: gaussian
+            compartments:
+              artifact: 1
+              A: 1
+            center: irf.center
+            width: irf.width
+            dispersion_center: irf.dispcenter
+            center_dispersion_coefficients: [irf.disp1, irf.disp2]
+          - type: gaussian
+            compartments:
+              artifact2: 1
+              I: amp.dump
+            center: irf.center2
+            width: irf.width
+            dispersion_center: irf.dispcenter
+            center_dispersion_coefficients: [irf.disp1, irf.disp2]
+            # model_dispersion_with_wavenumber: true
