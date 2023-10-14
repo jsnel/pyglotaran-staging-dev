@@ -1,0 +1,3 @@
+[submodule "pyglotaran"]
+	path = pyglotaran
+	url = https://github.com/glotaran/pyglotaran.git
