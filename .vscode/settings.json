@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "pyglotaran",
+        "pyglotaran-extras"
+    ]
+}
