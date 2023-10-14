@@ -41,3 +41,12 @@ Select the newly created `pygta_staging` kernel environment.
 Execute the VS Code command (CTRL+SHIFT+P) `Python: Select Interpreter` and select the `pygta_staging` environment.
 
 ![Python Select Interpreter](docs/images/select_python_environment.png)
+
+
+## Recommended VS Code extensions
+
+Install the ruff extension for hints about how to improve your code.
+
+![Ruff](docs/images/vs-code-extensions-ruff.png)
+
+A `.ruff.toml` file is included in this repository to configure ruff for this project.
