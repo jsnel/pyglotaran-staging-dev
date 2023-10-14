@@ -26,7 +26,8 @@ experiments:
     datasets:
       GFPppH2O:
         elements: [artifact, fast, slow]
-        element_scale: [1, 1, scale.slow]
+        element_scale:
+          slow: scale.slow
         activation:
           - type: gaussian
             compartments:
@@ -38,7 +39,8 @@ experiments:
             center_dispersion_coefficients: [irf.disp1, irf.disp2]
       GFPpdpH2O:
         elements: [artifact, artifact2, fast, slow]
-        element_scale: [1, 1, 1, scale.slow]
+        element_scale:
+          slow: scale.slow
         activation:
           - type: gaussian
             compartments:
