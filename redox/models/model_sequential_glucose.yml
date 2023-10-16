@@ -1,0 +1,46 @@
+# type: doas
+
+library:
+  sequential:
+    type: kinetic
+    rates:
+      "(g1, g1)": kinetic.from_g1
+      "(g3, g2)": kinetic.to_g3_from_g2
+      "(g4, g3)": kinetic.to_g4_from_g3
+      "(g5, g4)": kinetic.to_g5_from_g4
+      "(g5, g5)": kinetic.from_g5
+  # slow:
+  #   type: kinetic
+  #   extends: [sequential]
+  #   rates:
+  #     "(g3, g2)": kinetic.to_I_from_A_slow
+  # artifact:
+  #   type: coherent-artifact
+  #   order: 1
+  # artifact2:
+  #   type: coherent-artifact
+  #   order: 1
+    # width: artifact.CAwidth
+
+experiments:
+  myexp:
+    residual_function: non_negative_least_squares
+    datasets:
+      glucose:
+        elements: [sequential]
+        # element_scale:
+        #   slow: scale.slow
+        activation:
+          - type: gaussian
+            compartments:
+              g2: amp.dump
+              g1: amp.dump2
+            center: irf.center
+            width: irf.width
+            not_normalized_compartments: [g1, g2, g3, g4, g5]
+          - type: gaussian
+            compartments:
+              g1: amp.dump
+            center: irf.center2
+            width: irf.width
+            not_normalized_compartments: [g1, g2, g3, g4, g5]

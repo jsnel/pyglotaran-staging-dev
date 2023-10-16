@@ -1,0 +1,16 @@
+amp:
+  - ["dump", 1, { max: 0, vary: False }]
+  - ["dump2", 0.2, { expr: "-$amp.dump" }]
+
+kinetic:
+  - ["to_g3_from_g2", 0.4, { min: 0, vary: True }]
+  - ["to_g4_from_g3", 0.021, { min: 0, vary: True }]
+  - ["to_g5_from_g4", 0.02, { min: 0, vary: False }]
+  - ["from_g5", 1.e-5, { min: 0, vary: False }]
+  - ["from_g1", 1.e-9, { min: 0, vary: False }]
+
+irf:
+  - ["center", 10.5, { non-negative: False, vary: True }]
+  - ["delay2", -100, { non-negative: False, vary: False }]
+  - ["center2", 1, { expr: "$irf.center + $irf.delay2" }]
+  - ["width", 1.11, { min: 0, vary: False }]

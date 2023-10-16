@@ -1,0 +1,555 @@
+Analyse
+f
+data/Glucose.ascii
+wavelength boundaries 350.,700., 0
+time index boundaries 0, 0,0
+t
+Iterations -10
+nfix 0
+lscalxplot t
+ldebug t
+ldebug2 f
+lposk t
+lautostartgaussmu f
+ldoublegaussian f
+lzero t
+1
+1,1,100
+lequ t
+1
+5,1,1,100,1
+lreadplotname Glucose
+lreadindexfixed t
+lreadindexsyntax t
+nfix -9
+nfix -14
+lexamp4 t
+lnnls t
+lpermk t
+lKmatrix t
+lpermparmul t
+lpermkperexp t 
+lpermkperexp2 t
+lnosum1 t
+lToFrom t
+lfinitediff t
+ldump t
+2,t,t,t
+lprogramweight t
+Iterations 1
+1,1,1,0,600,670,5,10
+0,1,1,0,600,670,3,10
+t
+t
+Fit covariance f
+Model 1
+Show chisq t
+Show start C f
+Show start E F
+Fit concentrations F
+Fit gauss t
+B parameters from concentration
+Total components 5
+Total rate constants 5
+Total concentration 0.d0
+Fractions
+0.,0.,0.,0.0, 0.0, 0.0,0.0
+nu, nw 0, 0
+1,1,1,6
+5 0 8
+2,1,1
+3,2,2
+4,3,3
+4,4,4
+5,5,5
+0,0,0,0
+1,2
+1,1
+5,4
+2,3
+Start parameters 1,3,1
+0.387948811  1.96831543E-02  1.96809433E-02  9.79356992E-06  6.21078122E-09  2.20929435E-03  0.00000000  1.00000000  1.00000000  -50.0804100
+1.10972738   1.00000000      53.4848976      1.00000000      -1.00000000                                                         
+1,12,1
+14,15,1
+0,0,0
+0.04
+Ifig -1
+lcolor t
+llinet f
+llinete f
+lespline t
+lnobiasplot t
+tstring t(s)
+llogtspecial t
+lressingvec t
+charheight 0.5
+ixthetadumpshift 13
+lsetlaxis t
+400,50,700
+Ifig 200
+More output t
+Show start E f
+Ifig -1
+lfitted t
+charheight 0.7
+lwriteint t
+llogtspecial t
+tstring Time (s)$
+xsize 8.
+ixthetadumpshift 13
+Ifig 8
+f,0
+15,f
+6,15,1,1254
+More output t
+Show start E f
+Ifig -1
+lcolor t
+lsmall t
+lespline f
+lpage t
+30.,25.
+llinet f
+llinete f
+lnocplot t
+ldatapoints t
+lmarknr0 t
+llogtspecial t
+ystring SAS$
+tstring Time (s)$
+lstring Wavelength (nm)$
+lnoabc t
+charheight 0.5
+Ifig 3
+0,f,t
+t
+More output t
+Show start E f
+Ifig -1
+lcolor t
+lsmall t
+lespline f
+lpage t
+30.,25.
+llinet f
+llinete f
+lnocplot t
+ldatapoints t
+lmarknr0 t
+llogtspecial t
+ystring nSAS$
+tstring Time (s)$
+lstring Wavelength (nm)$
+lnoabc t
+charheight 0.5
+Ifig 3
+0,f,t
+f
+More output t
+Show start E f
+Ifig -1
+lcolor t
+lsmall t
+lespline f
+lpage t
+30.,25.
+llinet f
+llinete f
+lnoeplot t
+ldatapoints t
+lmarknr0 t
+llogtspecial t
+ystringc population$
+tstring Time (s)$
+lstring Wavelength (nm)$
+ixthetadumpshift 13
+lnoabc t
+charheight 0.5
+Ifig 3
+0,f,t
+t
+More output t
+Show start E f
+Ifig -1
+lpage t
+25.3,9
+xoff 0.1
+yoff 6.1
+ygap 1.75
+charheight 0.5
+Ifig 21
+1,2
+More output f
+f
+f
+Iterations -10
+stop
+
+5,10,1
+12,12,1
+
+ystringc c@E0.6H0.7&II@HXEX&(k)$
+More output t
+Show start E f
+Ifig -1
+llogtspecial t
+charheight 0.5
+lfitted t
+ldrawdecays t
+lnodatapoints t
+lpage t
+15,9
+ltext1 t
+lnoxlabel f
+tstring Time (s)$
+lnoabc t
+lcolor t
+lyminmax t
+iplotexp 1
+ystring 762 nm$
+charheight 0.5
+yoff 3.
+xoff 3.
+llinet f
+Ifig 3
+-50,f,f
+f,t,t
+dd
+41
+-0.2,1.3
+b$
+More output t
+Show start E f
+Ifig -1
+llogtspecial t
+charheight 0.5
+lfitted t
+ldrawdecays t
+lnodatapoints t
+lpage t
+15,9
+ltext1 t
+lnoxlabel f
+tstring Time (s)$
+lnoabc t
+lcolor t
+lyminmax t
+iplotexp 1
+ystring 684 nm$
+charheight 0.5
+yoff 3.
+xoff 3.
+llinet f
+Ifig 3
+-50,f,f
+f,t,t
+dd
+18
+-0.4,1.
+a$
+More output t
+Show start E f
+Ifig -1
+llogtspecial t
+tstring $
+lstring $
+charheight 0.5
+ldrawerrmax t
+lnofitsvd t
+lcolor t
+llinet f
+lmarknr0 f
+nsvd 4
+letext t
+Ifig 5
+x,y,z
+b$
+0.5,4
+a$
+0.5,4
+c$
+2.5,4
+More output t
+Show start E f
+Ifig -1
+llogtspecial t
+tstring Time (s)$
+lstring Wavelength (nm)$
+charheight 0.5
+ldrawerrmax t
+letext t
+lpage t
+33.,14.
+Ifig 14
+x,y,z
+1,f
+d$
+0.5,4
+e$
+0.5,4
+f$
+2.5,4
+More output f
+f
+f
+Iterations -10
+stop
+Analyse
+f
+../syn.cys.708ex.1_19
+wavelength boundaries 635.,785., 0
+time index boundaries 10, 0,0
+t
+Iterations -10
+nfix 0
+lstreak t
+13140.6044678,6570.3022339
+lscalxplot t
+ldebug f
+ldebug2 f
+lposk f
+lautostartgaussmu t
+2
+lsecondpulse t
+Iterations 21
+t
+t
+Fit covariance f
+Model 1
+Show chisq t
+Show start C f
+Show start E F
+Fit concentrations F
+Fit gauss t
+B parameters from concentration
+Total components 4
+Total rate constants 3
+Total concentration 0.d0
+Fractions
+0.,0.,0.,0.0, 0.0, 0.0,0.0
+nu, nw 0, 0
+Start parameters
+1.22,0.045,2.15e-4
+   62.27,1.34,14.,0.2
+0.05
+Ifig -1
+lcolor t
+llinet f
+llinete f
+lespline t
+lnobiasplot t
+tstring t(s)
+llogtspecial t
+lressingvec t
+charheight 0.5
+Ifig 0
+More output t
+Show start E f
+Ifig -1
+linset t
+llogtspecial t
+tstring t(s)
+Ifig 8
+f,0
+1,f
+3,11,1,33
+More output t
+Show start E f
+Ifig -1
+lcolor t
+lsmall t
+lespline t
+llinet f
+llinete f
+ldatapoints t
+lmarknr0 t
+llogtspecial t
+tstring Time (s)$
+lstring Wavelength (nm)$
+lxaxis t
+lnoabc f
+charheight 0.5
+yoff 3.
+Ifig 3
+0,f,t
+t
+640,20,780
+More output f
+f
+f
+Iterations -10
+stop
+Analyse
+f
+../syn.coc.719ex.1_16
+wavelength boundaries 635.,785., 0
+time index boundaries 10, 0,0
+t
+Iterations -10
+nfix 0
+lstreak t
+13140.6044678,6570.3022339
+lscalxplot t
+ldebug f
+ldebug2 f
+lposk t
+lautostartgaussmu t
+2
+Iterations 21
+t
+f
+Fit covariance f
+Model 1
+Show chisq t
+Show start C f
+Show start E F
+Fit concentrations F
+Fit gauss t
+B parameters from concentration
+Total components 4
+Total rate constants 3
+Total concentration 0.d0
+Fractions
+0.,0.,0.,0.0, 0.0, 0.0,0.0
+nu, nw 0, 0
+Start parameters
+0.308,0.027,2.15e-4
+   62.27,1.5
+0.1
+Ifig -1
+lcolor t
+llinet f
+llinete f
+lespline t
+lnobiasplot t
+tstring t(s)
+llogtspecial t
+lressingvec t
+charheight 0.5
+Ifig 0
+More output t
+Show start E f
+Ifig -1
+linset t
+llogtspecial t
+tstring t(s)
+Ifig 8
+f,0
+1,f
+3,11,1,33
+More output t
+Show start E f
+Ifig -1
+lcolor t
+lsmall t
+lespline t
+llinet f
+llinete f
+ldatapoints t
+lmarknr0 t
+llogtspecial t
+tstring Time (s)$
+lstring Wavelength (nm)$
+lxaxis t
+lnoabc f
+charheight 0.5
+yoff 3.
+Ifig 3
+0,f,t
+t
+640,20,780
+More output f
+f
+f
+Iterations -10
+stop
+Analyse
+f
+../syn.coc.719ex.2_16without4.8.11
+wavelength boundaries 635.,785., 0
+time index boundaries 10, 0,0
+t
+Iterations -10
+nfix 0
+lstreak t
+13140.6044678,6570.3022339
+lscalxplot t
+ldebug f
+ldebug2 f
+lposk f
+lautostartgaussmu t
+2
+Iterations 21
+t
+t
+Fit covariance f
+Model 1
+Show chisq t
+Show start C f
+Show start E F
+Fit concentrations F
+Fit gauss t
+B parameters from concentration
+Total components 3
+Total rate constants 2
+Total concentration 0.d0
+Fractions
+0.,0.,0.,0.0, 0.0, 0.0,0.0
+nu, nw 0, 0
+Start parameters
+0.027,2.15e-4
+   62.27,1.5
+0.1
+Ifig -1
+lcolor t
+llinet f
+llinete f
+lespline t
+lnobiasplot t
+tstring t(s)
+llogtspecial t
+lressingvec t
+charheight 0.5
+Ifig 0
+More output t
+Show start E f
+Ifig -1
+linset t
+llogtspecial t
+tstring t(s)
+Ifig 8
+f,0
+1,f
+3,11,1,33
+More output t
+Show start E f
+Ifig -1
+lcolor t
+lsmall t
+lespline t
+llinet f
+llinete f
+ldatapoints t
+lmarknr0 t
+llogtspecial t
+tstring Time (s)$
+lstring Wavelength (nm)$
+lxaxis t
+lnoabc f
+charheight 0.5
+yoff 3.
+Ifig 3
+0,f,t
+t
+640,20,780
+More output f
+f
+f
+Iterations -10
+stop
+
+5,4,4
+6,5,5
+6,6,6
+4,9,1
