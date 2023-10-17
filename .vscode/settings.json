@@ -2,5 +2,14 @@
     "python.analysis.extraPaths": [
         "pyglotaran",
         "pyglotaran-extras"
-    ]
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": false,
+            "source.fixAll": false
+        }
+    },
+    "ruff.organizeImports": false,
 }
