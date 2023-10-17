@@ -20,7 +20,7 @@ library:
   # artifact2:
   #   type: coherent-artifact
   #   order: 1
-    # width: artifact.CAwidth
+  # width: artifact.CAwidth
 
 experiments:
   myexp:
@@ -31,16 +31,18 @@ experiments:
         # element_scale:
         #   slow: scale.slow
         activation:
+          # Pre-pulse
+          - type: gaussian
+            compartments:
+              g1: amp.dump
+            center: irf.center2
+            width: irf.width
+            not_normalized_compartments: [g1, g2, g3, g4, g5]
+          # Main pulse
           - type: gaussian
             compartments:
               g2: amp.dump
               g1: amp.dump2
             center: irf.center
-            width: irf.width
-            not_normalized_compartments: [g1, g2, g3, g4, g5]
-          - type: gaussian
-            compartments:
-              g1: amp.dump
-            center: irf.center2
             width: irf.width
             not_normalized_compartments: [g1, g2, g3, g4, g5]
