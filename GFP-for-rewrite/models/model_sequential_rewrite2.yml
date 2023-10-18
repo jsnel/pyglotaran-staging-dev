@@ -23,6 +23,7 @@ library:
 
 experiments:
   myexp:
+    clp_link_tolerance: 0.1
     datasets:
       GFPppH2O:
         elements: [artifact, fast, slow]
