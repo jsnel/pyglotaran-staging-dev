@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=schema.json
+
+library:
+  parallel_model:
+    type: kinetic
+    rates:
+      "(species_1, species_1)": rates.species_1
+      "(species_2, species_2)": rates.species_2
+
+  global_model_ds1:
+    type: spectral
+    shapes:
+      species_1:
+        type: gaussian
+        amplitude: 250
+        location: 620
+        width: 50
+      species_2:
+        type: gaussian
+        amplitude: 1
+        location: 650
+        width: 60
+
+  global_model_ds2:
+    type: spectral
+    shapes:
+      species_1:
+        type: gaussian
+        amplitude: 250
+        location: 620
+        width: 50
+      species_2:
+        type: gaussian
+        amplitude: 300
+        location: 650
+        width: 60
+
+experiments:
+  sim:
+    datasets:
+      dataset_1:
+        elements: [parallel_model]
+        global_elements: [global_model_ds1]
+        activation:
+          - type: gaussian
+            compartments:
+              species_1: 1
+              species_2: 1
+            center: irf.center
+            width: irf.width
+      dataset_2:
+        elements: [parallel_model]
+        global_elements: [global_model_ds2]
+        activation:
+          - type: gaussian
+            compartments:
+              species_1: 1
+              species_2: 1
+            center: irf.center
+            width: irf.width

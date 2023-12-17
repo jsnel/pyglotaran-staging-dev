@@ -1,0 +1,44 @@
+dataset_groups:
+  default:
+    residual_function: non_negative_least_squares
+    link_clp: false
+
+megacomplex:
+  two_species_decay:
+    type: decay
+    k_matrix: [km2comp]
+
+k_matrix:
+  km2comp:
+    matrix:
+      (species_1, species_1): "rates.species_1"
+      (species_2, species_2): "rates.species_2"
+
+initial_concentration:
+  input1:
+    compartments: [species_1, species_2]
+    parameters: [inputs.s1, inputs.s2_low]
+  input2:
+    compartments: [species_1, species_2]
+    parameters: [inputs.s1, inputs.s2_normal]
+
+
+dataset:
+  dataset_1:
+    megacomplex:
+      - two_species_decay
+    initial_concentration: input1
+    irf: gaussian_irf
+    # scale: scale.dataset_1
+  dataset_2:
+    megacomplex:
+      - two_species_decay
+    initial_concentration: input2
+    irf: gaussian_irf
+    scale: scale.dataset_2
+
+irf:
+  gaussian_irf:
+    type: gaussian
+    center: irf.center
+    width: irf.width

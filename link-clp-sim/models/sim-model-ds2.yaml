@@ -1,0 +1,37 @@
+megacomplex:
+  megacomplex_parallel_decay:
+    type: decay-parallel
+    compartments:
+      - species_1
+      - species_2
+    rates:
+      - rates.species_1
+      - rates.species_2
+  megacomplex_spectral:
+    type: spectral
+    shape:
+      species_1: shape_species_1
+      species_2: shape_species_2
+dataset:
+  dataset_2:
+    megacomplex:
+      - megacomplex_parallel_decay
+    global_megacomplex:
+      - megacomplex_spectral
+    irf: gaussian_irf
+shape:
+  shape_species_1:
+    type: gaussian
+    amplitude: shapes.species_1.amplitude
+    location: shapes.species_1.location
+    width: shapes.species_1.width
+  shape_species_2:
+    type: gaussian
+    amplitude: shapes.species_2_normal.amplitude
+    location: shapes.species_2_normal.location
+    width: shapes.species_2_normal.width
+irf:
+  gaussian_irf:
+    type: gaussian
+    center: irf.center
+    width: irf.width

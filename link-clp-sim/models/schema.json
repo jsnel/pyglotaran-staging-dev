@@ -1,0 +1,1869 @@
+{
+    "$defs": {
+        "BaselineElement": {
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "const": "baseline",
+                    "title": "Type"
+                },
+                "dimension": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Dimension"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "title": "BaselineElement",
+            "type": "object"
+        },
+        "ClpGuideElement": {
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "const": "clp-guide",
+                    "title": "Type"
+                },
+                "dimension": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Dimension"
+                },
+                "target": {
+                    "title": "Target",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "target"
+            ],
+            "title": "ClpGuideElement",
+            "type": "object"
+        },
+        "ClpRelation": {
+            "additionalProperties": false,
+            "description": "Applies a relation between two clps.\n\nThe relation is applied as :math:`target = parameter * source`.",
+            "properties": {
+                "interval": {
+                    "anyOf": [
+                        {
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "prefixItems": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "maxItems": 2,
+                                "minItems": 2,
+                                "prefixItems": [
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "number"
+                                    }
+                                ],
+                                "type": "array"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Interval"
+                },
+                "source": {
+                    "title": "Source",
+                    "type": "string"
+                },
+                "target": {
+                    "title": "Target",
+                    "type": "string"
+                },
+                "parameter": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Parameter"
+                }
+            },
+            "required": [
+                "source",
+                "target",
+                "parameter"
+            ],
+            "title": "ClpRelation",
+            "type": "object"
+        },
+        "CoherentArtifactElement": {
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "const": "coherent-artifact",
+                    "title": "Type"
+                },
+                "dimension": {
+                    "default": "time",
+                    "title": "Dimension",
+                    "type": "string"
+                },
+                "order": {
+                    "title": "Order",
+                    "type": "integer"
+                },
+                "width": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Width"
+                }
+            },
+            "required": [
+                "type",
+                "order"
+            ],
+            "title": "CoherentArtifactElement",
+            "type": "object"
+        },
+        "DampedOscillationElement": {
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "const": "damped-oscillation",
+                    "title": "Type"
+                },
+                "dimension": {
+                    "default": "time",
+                    "title": "Dimension",
+                    "type": "string"
+                },
+                "oscillations": {
+                    "additionalProperties": {
+                        "$ref": "#/$defs/Oscillation"
+                    },
+                    "title": "Oscillations",
+                    "type": "object"
+                }
+            },
+            "required": [
+                "type",
+                "oscillations"
+            ],
+            "title": "DampedOscillationElement",
+            "type": "object"
+        },
+        "DataModel": {
+            "additionalProperties": false,
+            "description": "A model for datasets.",
+            "properties": {
+                "data": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Data"
+                },
+                "extra_data": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Extra Data"
+                },
+                "elements": {
+                    "description": "The elements contributing to this dataset.",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Element"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "title": "Elements",
+                    "type": "array"
+                },
+                "element_scale": {
+                    "anyOf": [
+                        {
+                            "additionalProperties": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/Parameter"
+                                    },
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Element Scale"
+                },
+                "global_elements": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/Element"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The global elements contributing to this dataset.",
+                    "title": "Global Elements"
+                },
+                "global_element_scale": {
+                    "anyOf": [
+                        {
+                            "additionalProperties": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/Parameter"
+                                    },
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Global Element Scale"
+                },
+                "residual_function": {
+                    "default": "variable_projection",
+                    "description": "The residual function to use.",
+                    "enum": [
+                        "variable_projection",
+                        "non_negative_least_squares"
+                    ],
+                    "title": "Residual Function",
+                    "type": "string"
+                },
+                "weights": {
+                    "items": {
+                        "$ref": "#/$defs/Weight"
+                    },
+                    "title": "Weights",
+                    "type": "array"
+                }
+            },
+            "required": [
+                "elements"
+            ],
+            "title": "DataModel",
+            "type": "object"
+        },
+        "Element": {
+            "additionalProperties": false,
+            "description": "Subclasses must overwrite :method:`glotaran.model.Element.calculate_matrix`.",
+            "properties": {
+                "type": {
+                    "const": null,
+                    "title": "Type"
+                },
+                "dimension": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Dimension"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "title": "Element",
+            "type": "object"
+        },
+        "EqualAreaPenalty": {
+            "additionalProperties": false,
+            "description": "Forces the area of 2 clp to be the same.\n\nAn equal area constraint adds a the difference of the sum of a\ncompartments in the e matrix in one or more intervals to the scaled sum\nof the e matrix of one or more target compartments to residual. The additional\nresidual is scaled with the weight.",
+            "properties": {
+                "type": {
+                    "const": "equal_area",
+                    "title": "Type"
+                },
+                "source": {
+                    "title": "Source",
+                    "type": "string"
+                },
+                "source_intervals": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "maxItems": 2,
+                                "minItems": 2,
+                                "prefixItems": [
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "number"
+                                    }
+                                ],
+                                "type": "array"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "prefixItems": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Source Intervals"
+                },
+                "target": {
+                    "title": "Target",
+                    "type": "string"
+                },
+                "target_intervals": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "maxItems": 2,
+                                "minItems": 2,
+                                "prefixItems": [
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "number"
+                                    }
+                                ],
+                                "type": "array"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "prefixItems": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Target Intervals"
+                },
+                "parameter": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Parameter"
+                },
+                "weight": {
+                    "title": "Weight",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "type",
+                "source",
+                "target",
+                "parameter",
+                "weight"
+            ],
+            "title": "EqualAreaPenalty",
+            "type": "object"
+        },
+        "ExperimentModel": {
+            "additionalProperties": false,
+            "description": "A dataset group for optimization.",
+            "properties": {
+                "clp_link_tolerance": {
+                    "default": 0.0,
+                    "title": "Clp Link Tolerance",
+                    "type": "number"
+                },
+                "clp_link_method": {
+                    "default": "nearest",
+                    "enum": [
+                        "nearest",
+                        "backward",
+                        "forward"
+                    ],
+                    "title": "Clp Link Method",
+                    "type": "string"
+                },
+                "clp_constraints": {
+                    "items": {
+                        "discriminator": {
+                            "mapping": {
+                                "only": "#/$defs/OnlyConstraint",
+                                "zero": "#/$defs/ZeroConstraint"
+                            },
+                            "propertyName": "type"
+                        },
+                        "oneOf": [
+                            {
+                                "$ref": "#/$defs/ZeroConstraint"
+                            },
+                            {
+                                "$ref": "#/$defs/OnlyConstraint"
+                            }
+                        ]
+                    },
+                    "title": "Clp Constraints",
+                    "type": "array"
+                },
+                "clp_penalties": {
+                    "items": {
+                        "$ref": "#/$defs/EqualAreaPenalty"
+                    },
+                    "title": "Clp Penalties",
+                    "type": "array"
+                },
+                "clp_relations": {
+                    "items": {
+                        "$ref": "#/$defs/ClpRelation"
+                    },
+                    "title": "Clp Relations",
+                    "type": "array"
+                },
+                "datasets": {
+                    "additionalProperties": {
+                        "$ref": "#/$defs/GlotaranDataModel"
+                    },
+                    "title": "Datasets",
+                    "type": "object"
+                },
+                "residual_function": {
+                    "default": "variable_projection",
+                    "description": "The residual function to use.",
+                    "enum": [
+                        "variable_projection",
+                        "non_negative_least_squares"
+                    ],
+                    "title": "Residual Function",
+                    "type": "string"
+                },
+                "scale": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Parameter"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "description": "The scales of of the datasets in the experiment.",
+                    "title": "Scale",
+                    "type": "object"
+                }
+            },
+            "required": [
+                "datasets"
+            ],
+            "title": "ExperimentModel",
+            "type": "object"
+        },
+        "ExtendableElement": {
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "const": null,
+                    "title": "Type"
+                },
+                "dimension": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Dimension"
+                },
+                "extends": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Extends"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "title": "ExtendableElement",
+            "type": "object"
+        },
+        "InternalMockElement": {
+            "additionalProperties": false,
+            "description": "An internal model for testing purpose, since at least 2 items\nare needed for pydanticx discriminators.",
+            "properties": {
+                "type": {
+                    "const": "internal_mock",
+                    "title": "Type"
+                },
+                "dimension": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Dimension"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "title": "InternalMockElement",
+            "type": "object"
+        },
+        "KineticElement": {
+            "additionalProperties": false,
+            "properties": {
+                "rates": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Parameter"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "title": "Rates",
+                    "type": "object"
+                },
+                "type": {
+                    "const": "kinetic",
+                    "title": "Type"
+                },
+                "dimension": {
+                    "default": "time",
+                    "title": "Dimension",
+                    "type": "string"
+                },
+                "extends": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Extends"
+                }
+            },
+            "required": [
+                "rates",
+                "type"
+            ],
+            "title": "KineticElement",
+            "type": "object"
+        },
+        "ModelLibrary": {
+            "additionalProperties": {
+                "discriminator": {
+                    "mapping": {
+                        "None": "#/$defs/ExtendableElement",
+                        "baseline": "#/$defs/BaselineElement",
+                        "clp-guide": "#/$defs/ClpGuideElement",
+                        "coherent-artifact": "#/$defs/CoherentArtifactElement",
+                        "damped-oscillation": "#/$defs/DampedOscillationElement",
+                        "internal_mock": "#/$defs/InternalMockElement",
+                        "kinetic": "#/$defs/KineticElement",
+                        "spectral": "#/$defs/SpectralElement"
+                    },
+                    "propertyName": "type"
+                },
+                "oneOf": [
+                    {
+                        "$ref": "#/$defs/ExtendableElement"
+                    },
+                    {
+                        "$ref": "#/$defs/InternalMockElement"
+                    },
+                    {
+                        "$ref": "#/$defs/BaselineElement"
+                    },
+                    {
+                        "$ref": "#/$defs/ClpGuideElement"
+                    },
+                    {
+                        "$ref": "#/$defs/CoherentArtifactElement"
+                    },
+                    {
+                        "$ref": "#/$defs/DampedOscillationElement"
+                    },
+                    {
+                        "$ref": "#/$defs/KineticElement"
+                    },
+                    {
+                        "$ref": "#/$defs/SpectralElement"
+                    }
+                ]
+            },
+            "title": "ModelLibrary",
+            "type": "object"
+        },
+        "OnlyConstraint": {
+            "additionalProperties": false,
+            "description": "Constraints the target to 0 outside the given interval.",
+            "properties": {
+                "interval": {
+                    "anyOf": [
+                        {
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "prefixItems": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "maxItems": 2,
+                                "minItems": 2,
+                                "prefixItems": [
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "number"
+                                    }
+                                ],
+                                "type": "array"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Interval"
+                },
+                "type": {
+                    "const": "only",
+                    "title": "Type"
+                },
+                "target": {
+                    "title": "Target",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "target"
+            ],
+            "title": "OnlyConstraint",
+            "type": "object"
+        },
+        "Oscillation": {
+            "additionalProperties": false,
+            "properties": {
+                "frequency": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Frequency"
+                },
+                "rate": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Rate"
+                }
+            },
+            "required": [
+                "frequency",
+                "rate"
+            ],
+            "title": "Oscillation",
+            "type": "object"
+        },
+        "Parameter": {
+            "description": "Label of a parameter in the parameters file.",
+            "title": "ParameterLabel",
+            "type": "string",
+            "enum": [
+                "amp.dump",
+                "amp.dump2",
+                "irf.center",
+                "irf.center2",
+                "irf.delay2",
+                "irf.disp1",
+                "irf.disp2",
+                "irf.dispcenter",
+                "irf.width",
+                "kinetic.from_I2",
+                "kinetic.to_I1_from_I",
+                "kinetic.to_I2_from_I1",
+                "kinetic.to_I_from_A",
+                "kinetic.to_I_from_A_slow",
+                "scale.slow"
+            ]
+        },
+        "SpectralElement": {
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "const": "spectral",
+                    "title": "Type"
+                },
+                "dimension": {
+                    "default": "spectral",
+                    "title": "Dimension",
+                    "type": "string"
+                },
+                "shapes": {
+                    "additionalProperties": {
+                        "discriminator": {
+                            "mapping": {
+                                "gaussian": "#/$defs/SpectralShapeGaussian",
+                                "one": "#/$defs/SpectralShapeOne",
+                                "skewed-gaussian": "#/$defs/SpectralShapeSkewedGaussian",
+                                "zero": "#/$defs/SpectralShapeZero"
+                            },
+                            "propertyName": "type"
+                        },
+                        "oneOf": [
+                            {
+                                "$ref": "#/$defs/SpectralShapeGaussian"
+                            },
+                            {
+                                "$ref": "#/$defs/SpectralShapeSkewedGaussian"
+                            },
+                            {
+                                "$ref": "#/$defs/SpectralShapeOne"
+                            },
+                            {
+                                "$ref": "#/$defs/SpectralShapeZero"
+                            }
+                        ]
+                    },
+                    "title": "Shapes",
+                    "type": "object"
+                }
+            },
+            "required": [
+                "type",
+                "shapes"
+            ],
+            "title": "SpectralElement",
+            "type": "object"
+        },
+        "SpectralShapeGaussian": {
+            "additionalProperties": false,
+            "description": "A Gaussian spectral shape",
+            "properties": {
+                "type": {
+                    "const": "gaussian",
+                    "title": "Type"
+                },
+                "amplitude": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Amplitude"
+                },
+                "location": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Location"
+                },
+                "width": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Width"
+                }
+            },
+            "required": [
+                "type",
+                "location",
+                "width"
+            ],
+            "title": "SpectralShapeGaussian",
+            "type": "object"
+        },
+        "SpectralShapeOne": {
+            "additionalProperties": false,
+            "description": "A constant spectral shape with value 1",
+            "properties": {
+                "type": {
+                    "const": "one",
+                    "title": "Type"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "title": "SpectralShapeOne",
+            "type": "object"
+        },
+        "SpectralShapeSkewedGaussian": {
+            "additionalProperties": false,
+            "description": "A skewed Gaussian spectral shape",
+            "properties": {
+                "type": {
+                    "const": "skewed-gaussian",
+                    "title": "Type"
+                },
+                "amplitude": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Amplitude"
+                },
+                "location": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Location"
+                },
+                "width": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Width"
+                },
+                "skewness": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Skewness"
+                }
+            },
+            "required": [
+                "type",
+                "location",
+                "width",
+                "skewness"
+            ],
+            "title": "SpectralShapeSkewedGaussian",
+            "type": "object"
+        },
+        "SpectralShapeZero": {
+            "additionalProperties": false,
+            "description": "A constant spectral shape with value 0",
+            "properties": {
+                "type": {
+                    "const": "zero",
+                    "title": "Type"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "title": "SpectralShapeZero",
+            "type": "object"
+        },
+        "Weight": {
+            "additionalProperties": false,
+            "description": "The `Weight` class describes a value by which a dataset will scaled.\n\n`global_interval` and `model_interval` are optional. The whole range of the dataset\nwill be used if not set.",
+            "properties": {
+                "global_interval": {
+                    "anyOf": [
+                        {
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "prefixItems": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Global Interval"
+                },
+                "model_interval": {
+                    "anyOf": [
+                        {
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "prefixItems": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Model Interval"
+                },
+                "value": {
+                    "title": "Value",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "value"
+            ],
+            "title": "Weight",
+            "type": "object"
+        },
+        "ZeroConstraint": {
+            "additionalProperties": false,
+            "description": "Constraints the target to 0 in the given interval.",
+            "properties": {
+                "interval": {
+                    "anyOf": [
+                        {
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "prefixItems": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ],
+                            "type": "array"
+                        },
+                        {
+                            "items": {
+                                "maxItems": 2,
+                                "minItems": 2,
+                                "prefixItems": [
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "number"
+                                    }
+                                ],
+                                "type": "array"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Interval"
+                },
+                "type": {
+                    "const": "zero",
+                    "title": "Type"
+                },
+                "target": {
+                    "title": "Target",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "target"
+            ],
+            "title": "ZeroConstraint",
+            "type": "object"
+        },
+        "GaussianActivation": {
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "const": "gaussian",
+                    "title": "Type"
+                },
+                "compartments": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Parameter"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "description": "A dictionary of activated compartments with the activation amplitude.",
+                    "title": "Compartments",
+                    "type": "object"
+                },
+                "not_normalized_compartments": {
+                    "description": "A list of the compartments which will not be normalized.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "Not Normalized Compartments",
+                    "type": "array"
+                },
+                "center": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Center"
+                },
+                "width": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "title": "Width"
+                },
+                "scale": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/Parameter"
+                                    },
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The scales of the gaussians.",
+                    "title": "Scale"
+                },
+                "shift": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/Parameter"
+                                    },
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A list parameters which gets subtracted from the centers along the global axis.",
+                    "title": "Shift"
+                },
+                "normalize": {
+                    "default": true,
+                    "description": "Whether to normalize the gaussians.",
+                    "title": "Normalize",
+                    "type": "boolean"
+                },
+                "backsweep": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The period of the backsweep in a streak experiment.",
+                    "title": "Backsweep"
+                },
+                "dispersion_center": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The center of the dispersion.",
+                    "title": "Dispersion Center"
+                },
+                "center_dispersion_coefficients": {
+                    "description": "The center coefficients of the dispersion.",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Parameter"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "title": "Center Dispersion Coefficients",
+                    "type": "array"
+                },
+                "width_dispersion_coefficients": {
+                    "description": "The width coefficients of the dispersion.",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Parameter"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "title": "Width Dispersion Coefficients",
+                    "type": "array"
+                },
+                "reciproke_global_axis": {
+                    "default": false,
+                    "description": "Set `True` if the global axis is reciproke (e.g. for wavennumbers),",
+                    "title": "Reciproke Global Axis",
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "type",
+                "compartments",
+                "center",
+                "width"
+            ],
+            "title": "GaussianActivation",
+            "type": "object"
+        },
+        "InstantActivation": {
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "const": "instant",
+                    "title": "Type"
+                },
+                "compartments": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Parameter"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "description": "A dictionary of activated compartments with the activation amplitude.",
+                    "title": "Compartments",
+                    "type": "object"
+                },
+                "not_normalized_compartments": {
+                    "description": "A list of the compartments which will not be normalized.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "Not Normalized Compartments",
+                    "type": "array"
+                }
+            },
+            "required": [
+                "type",
+                "compartments"
+            ],
+            "title": "InstantActivation",
+            "type": "object"
+        },
+        "MultiGaussianActivation": {
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "const": "multi-gaussian",
+                    "title": "Type"
+                },
+                "compartments": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Parameter"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "description": "A dictionary of activated compartments with the activation amplitude.",
+                    "title": "Compartments",
+                    "type": "object"
+                },
+                "not_normalized_compartments": {
+                    "description": "A list of the compartments which will not be normalized.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "Not Normalized Compartments",
+                    "type": "array"
+                },
+                "center": {
+                    "description": "The center of the gaussian",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Parameter"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "title": "Center",
+                    "type": "array"
+                },
+                "width": {
+                    "description": "The width of the gaussian.",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Parameter"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "title": "Width",
+                    "type": "array"
+                },
+                "scale": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/Parameter"
+                                    },
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The scales of the gaussians.",
+                    "title": "Scale"
+                },
+                "shift": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/Parameter"
+                                    },
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A list parameters which gets subtracted from the centers along the global axis.",
+                    "title": "Shift"
+                },
+                "normalize": {
+                    "default": true,
+                    "description": "Whether to normalize the gaussians.",
+                    "title": "Normalize",
+                    "type": "boolean"
+                },
+                "backsweep": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The period of the backsweep in a streak experiment.",
+                    "title": "Backsweep"
+                },
+                "dispersion_center": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Parameter"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The center of the dispersion.",
+                    "title": "Dispersion Center"
+                },
+                "center_dispersion_coefficients": {
+                    "description": "The center coefficients of the dispersion.",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Parameter"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "title": "Center Dispersion Coefficients",
+                    "type": "array"
+                },
+                "width_dispersion_coefficients": {
+                    "description": "The width coefficients of the dispersion.",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Parameter"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "title": "Width Dispersion Coefficients",
+                    "type": "array"
+                },
+                "reciproke_global_axis": {
+                    "default": false,
+                    "description": "Set `True` if the global axis is reciproke (e.g. for wavennumbers),",
+                    "title": "Reciproke Global Axis",
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "type",
+                "compartments",
+                "center",
+                "width"
+            ],
+            "title": "MultiGaussianActivation",
+            "type": "object"
+        },
+        "GlotaranDataModel": {
+            "additionalProperties": false,
+            "properties": {
+                "data": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Data"
+                },
+                "extra_data": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Extra Data"
+                },
+                "elements": {
+                    "description": "The elements contributing to this dataset.",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Element"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "title": "Elements",
+                    "type": "array"
+                },
+                "element_scale": {
+                    "anyOf": [
+                        {
+                            "additionalProperties": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/Parameter"
+                                    },
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Element Scale"
+                },
+                "global_elements": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/Element"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The global elements contributing to this dataset.",
+                    "title": "Global Elements"
+                },
+                "global_element_scale": {
+                    "anyOf": [
+                        {
+                            "additionalProperties": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/Parameter"
+                                    },
+                                    {
+                                        "type": "number"
+                                    },
+                                    {
+                                        "type": "string"
+                                    }
+                                ]
+                            },
+                            "type": "object"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Global Element Scale"
+                },
+                "residual_function": {
+                    "default": "variable_projection",
+                    "description": "The residual function to use.",
+                    "enum": [
+                        "variable_projection",
+                        "non_negative_least_squares"
+                    ],
+                    "title": "Residual Function",
+                    "type": "string"
+                },
+                "weights": {
+                    "items": {
+                        "$ref": "#/$defs/Weight"
+                    },
+                    "title": "Weights",
+                    "type": "array"
+                },
+                "spectral_axis_inverted": {
+                    "default": false,
+                    "title": "Spectral Axis Inverted",
+                    "type": "boolean"
+                },
+                "spectral_axis_scale": {
+                    "default": 1,
+                    "title": "Spectral Axis Scale",
+                    "type": "number"
+                },
+                "activation": {
+                    "description": "The activation(s) of the dataset.",
+                    "items": {
+                        "discriminator": {
+                            "mapping": {
+                                "gaussian": "#/$defs/GaussianActivation",
+                                "instant": "#/$defs/InstantActivation",
+                                "multi-gaussian": "#/$defs/MultiGaussianActivation"
+                            },
+                            "propertyName": "type"
+                        },
+                        "oneOf": [
+                            {
+                                "$ref": "#/$defs/MultiGaussianActivation"
+                            },
+                            {
+                                "$ref": "#/$defs/GaussianActivation"
+                            },
+                            {
+                                "$ref": "#/$defs/InstantActivation"
+                            }
+                        ]
+                    },
+                    "title": "Activation",
+                    "type": "array"
+                }
+            },
+            "required": [
+                "elements"
+            ],
+            "title": "GlotaranDataModel",
+            "type": "object"
+        }
+    },
+    "additionalProperties": false,
+    "properties": {
+        "experiments": {
+            "additionalProperties": {
+                "$ref": "#/$defs/ExperimentModel"
+            },
+            "title": "Experiments",
+            "type": "object"
+        },
+        "library": {
+            "$ref": "#/$defs/ModelLibrary"
+        }
+    },
+    "required": [
+        "experiments",
+        "library"
+    ],
+    "title": "Scheme",
+    "type": "object"
+}

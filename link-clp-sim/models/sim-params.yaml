@@ -1,0 +1,22 @@
+
+rates:
+  - [species_1, 0.5]
+  - [species_2, 0.3]
+
+irf:
+  - [center, 0.3]
+  - [width, 0.1]
+
+shapes:
+  species_1:
+    - [amplitude, 250]
+    - [location, 620]
+    - [width, 50]
+  species_2_low:
+    - [amplitude, 1]
+    - [location, 650]
+    - [width, 60]
+  species_2_normal:
+    - [amplitude, 300]
+    - [location, 650]
+    - [width, 60]
