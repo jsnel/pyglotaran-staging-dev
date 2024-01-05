@@ -21,6 +21,9 @@ experiments:
               species_2: inputs.s2_low
             center: irf.center
             width: irf.width
+# enable these two lines to deactivate CLP linking
+  unlink_clp:
+    datasets:
       dataset_2:
         elements: [parallel_model]
         activation:
