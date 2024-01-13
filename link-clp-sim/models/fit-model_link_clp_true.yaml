@@ -1,7 +1,7 @@
 dataset_groups:
   default:
     residual_function: non_negative_least_squares
-    # link_clp: true  # default
+    link_clp: true  # default
 
 megacomplex:
   two_species_decay:

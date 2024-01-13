@@ -7,21 +7,7 @@ library:
       "(species_1, species_1)": rates.species_1
       "(species_2, species_2)": rates.species_2
 
-  global_model_ds1:
-    type: spectral
-    shapes:
-      species_1:
-        type: gaussian
-        amplitude: 250
-        location: 620
-        width: 50
-      species_2:
-        type: gaussian
-        amplitude: 1
-        location: 650
-        width: 60
-
-  global_model_ds2:
+  global_model:
     type: spectral
     shapes:
       species_1:
@@ -40,21 +26,21 @@ experiments:
     datasets:
       dataset_1:
         elements: [parallel_model]
-        global_elements: [global_model_ds1]
+        global_elements: [global_model]
         activation:
           - type: gaussian
             compartments:
-              species_1: 1
-              species_2: 1
+              species_1: inputs.s1
+              species_2: inputs.s2_low
             center: irf.center
             width: irf.width
       dataset_2:
         elements: [parallel_model]
-        global_elements: [global_model_ds2]
+        global_elements: [global_model]
         activation:
           - type: gaussian
             compartments:
-              species_1: 1
-              species_2: 1
+              species_1: inputs.s1
+              species_2: inputs.s2_normal
             center: irf.center
             width: irf.width

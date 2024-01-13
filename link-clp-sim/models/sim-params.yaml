@@ -12,11 +12,12 @@ shapes:
     - [amplitude, 250]
     - [location, 620]
     - [width, 50]
-  species_2_low:
-    - [amplitude, 1]
-    - [location, 650]
-    - [width, 60]
-  species_2_normal:
+  species_2:
     - [amplitude, 300]
     - [location, 650]
     - [width, 60]
+
+inputs:
+  - [s1, 1]
+  - [s2_low, 0.01]
+  - [s2_normal, 0.75]
