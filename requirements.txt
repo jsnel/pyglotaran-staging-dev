@@ -2,6 +2,8 @@
 -e pyglotaran-extras
 # pyglotaran-examples does not need to be installed as package
 ipykernel # needed to work with notebooks in VS Code
+papermill
+yaargh
 pydantic
 pytest
 pytest-allclose
