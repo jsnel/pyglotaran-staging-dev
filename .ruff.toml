@@ -1,8 +1,6 @@
-# Enable flake8-bugbear (`B`) rules.
-select = ["E", "F", "B"]
 
-# Never enforce `E501` (line length violations).
-ignore = ["E501"]
+
+
 
 # Avoid trying to fix flake8-bugbear (`B`) violations.
 # unfixable = ["B"]
@@ -40,7 +38,16 @@ extend-exclude = [
 
 extend-include = ["*.ipynb"]
 # Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
-[per-file-ignores]
+
+
+# Never enforce `E501` (line length violations).
+[lint]
+ignore = ["E501"]
+
+# Enable flake8-bugbear (`B`) rules.
+select = ["E", "F", "B"]
+
+[lint.per-file-ignores]
 # "__init__.py" = ["E402"]
 # "path/to/file.py" = ["E402"]
 "*.ipynb" = [
