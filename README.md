@@ -1,5 +1,7 @@
 # pyglotaran-staging
-A temporary repository to organize various dependent repositories/packages for testing and development of the staging/rewrite branch
+A temporary repository to organize various dependent repositories/packages for testing and development of the staging/rewrite branch.
+
+Originally lived at [glotaran/pyglotaran-staging](https://github.com/glotaran/pyglotaran-staging) but was migrated [here](https://github.com/jsnel/pyglotaran-staging-dev) to make clear it is not an official repo.
 
 
 ## Introduction
