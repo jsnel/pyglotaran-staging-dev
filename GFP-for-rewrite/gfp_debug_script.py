@@ -14,8 +14,6 @@ plot_data_overview(
     linlog=True,
     linthresh=1,
     cmap="seismic",
-    datamin=-50,
-    datamax=50,
 )
 
 
