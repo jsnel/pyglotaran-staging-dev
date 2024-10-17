@@ -29,8 +29,9 @@ experiments:
         elements: [artifact, fast, slow]
         element_scale:
           slow: scale.slow
-        activation:
-          - type: gaussian
+        activations:
+          pump:
+            type: gaussian
             compartments:
               artifact: 1
               A: 1
@@ -42,8 +43,9 @@ experiments:
         elements: [artifact, artifact2, fast, slow]
         element_scale:
           slow: scale.slow
-        activation:
-          - type: gaussian
+        activations:
+          pump:
+            type: gaussian
             compartments:
               artifact: 1
               A: 1
@@ -51,7 +53,8 @@ experiments:
             width: irf.width
             dispersion_center: irf.dispcenter
             center_dispersion_coefficients: [irf.disp1, irf.disp2]
-          - type: gaussian
+          dump:
+            type: gaussian
             compartments:
               artifact2: 1
               I: amp.dump
