@@ -30,16 +30,16 @@ experiments:
         elements: [sequential]
         # element_scale:
         #   slow: scale.slow
-        activation:
-          # Pre-pulse
-          - type: gaussian
+        activations:
+          pre-pulse:
+            type: gaussian
             compartments:
               g1: amp.dump
             center: irf.center2
             width: irf.width
             not_normalized_compartments: [g1, g2, g3, g4, g5]
-          # Main pulse
-          - type: gaussian
+          main-pulse:
+            type: gaussian
             compartments:
               g2: amp.dump
               g1: amp.dump2
