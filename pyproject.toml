@@ -1,0 +1,26 @@
+[project]
+name = "pyglotaran-staging"
+version = "0.8.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = "==3.10.*"
+dependencies = [
+    "ipykernel>=7.1.0",
+    "papermill>=2.6.0",
+    "pydantic>=2.12.5",
+    "pyglotaran",
+    "pyglotaran-extras",
+    "pytest>=9.0.1",
+    "pytest-allclose>=1.0.0",
+    "yaargh>=0.28.0",
+]
+
+[tool.uv.workspace]
+members = [
+    "pyglotaran",
+    "pyglotaran-extras",
+]
+
+[tool.uv.sources]
+pyglotaran = { workspace = true }
+pyglotaran-extras = { workspace = true }
