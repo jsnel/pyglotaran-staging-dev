@@ -1,4 +1,4 @@
-# type: doas
+# yaml-language-server: $schema=schema.json
 
 library:
   sequential:
