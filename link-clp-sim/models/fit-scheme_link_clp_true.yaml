@@ -12,8 +12,9 @@ experiments:
     datasets:
       dataset_1:
         elements: [parallel_model]
-        activation:
-          - type: gaussian
+        activations:
+          irf:
+            type: gaussian
             compartments:
               species_1: inputs.s1
               species_2: inputs.s2_low
@@ -21,8 +22,9 @@ experiments:
             width: irf.width
       dataset_2:
         elements: [parallel_model]
-        activation:
-          - type: gaussian
+        activations:
+          irf:
+            type: gaussian
             compartments:
               species_1: inputs.s1
               species_2: inputs.s2_normal

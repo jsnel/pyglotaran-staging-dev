@@ -27,8 +27,9 @@ experiments:
       dataset_1:
         elements: [parallel_model]
         global_elements: [global_model]
-        activation:
-          - type: gaussian
+        activations:
+          irf:
+            type: gaussian
             compartments:
               species_1: inputs.s1
               species_2: inputs.s2_low
@@ -37,8 +38,9 @@ experiments:
       dataset_2:
         elements: [parallel_model]
         global_elements: [global_model]
-        activation:
-          - type: gaussian
+        activations:
+          irf:
+            type: gaussian
             compartments:
               species_1: inputs.s1
               species_2: inputs.s2_normal
