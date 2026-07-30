@@ -162,3 +162,7 @@ cython_debug/
 # Internal development case studies
 *.7z
 2024*
+
+tmp/
+
+.pnpm-store/
