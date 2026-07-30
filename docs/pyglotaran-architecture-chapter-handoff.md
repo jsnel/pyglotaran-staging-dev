@@ -3,10 +3,10 @@
 ## Document status
 
 - **Purpose:** execution-ready plan for producing an academic draft chapter about the architecture of the staging version of pyglotaran.
-- **Primary executor:** GPT-5.6 Luna, with review by a stronger model or a pyglotaran maintainer at the evidence and synthesis gates.
+- **Execution pattern:** one coordinating editor plus several parallel research, drafting, and review agents. The plan is model-independent and can be run with a single strong model that delegates work or with several independently scheduled agents.
 - **Reference workspace:** the repository containing the `pyglotaran`, `pyglotaran-examples`, `pyglotaran-extras`, and `Literature` directories.
-- **Target delivery:** a coherent draft by the end of the working day.
-- **Length:** aim for 8,000-9,200 words of chapter body and captions; the body must remain below 10,000 words. The reference list may be counted separately, but the draft should not depend on that exclusion to stay below the limit.
+- **Target delivery:** a coherent first draft within approximately two to three hours, followed by maintainer review and later refinement if needed.
+- **Length:** aim for approximately 8,000-10,000 words of chapter body and captions. This is a soft editorial target, not a ceiling. Exceed it when additional explanation, evidence, or transitions materially improve accuracy and readability; remove repetition before removing necessary explanation. Count the reference list separately.
 - **Citation style:** APA author-date in-text citations and an APA-formatted reference list.
 - **Provisional chapter title:** *The Architecture of pyglotaran: A Composable Framework for Global and Target Analysis*.
 
@@ -16,7 +16,7 @@ This is a planning and handoff document, not the chapter itself. It deliberately
 
 Write a self-contained, architecture-first account of pyglotaran at the level expected in an MSc thesis or a book chapter within a PhD thesis. The subject is the Python software package and the scientific-computing architecture embodied by the staging code, not merely the user-facing YAML syntax and not a tutorial for carrying out one analysis.
 
-The chapter should explain how pyglotaran represents a global or target analysis, turns a declarative scientific specification into a numerical estimation problem, composes scientific model contributions, treats measured data and parameters, executes nested parameter estimation, records results, and admits extensions. The argument should be accessible to a scientifically literate reader who understands elementary linear algebra, nonlinear least squares, and the purpose of time-resolved spectroscopy, but who does not already know pyglotaran.
+The chapter should explain how pyglotaran represents a global or target analysis, turns a declarative scientific specification into a numerical estimation problem, composes scientific model contributions, treats measured data and parameters, executes nested parameter estimation, records results, and admits extensions. The intended reader is a mathematics, physics, or other science student at bachelor level. No prior knowledge of global analysis, target analysis, time-resolved spectroscopy, separable least squares, or pyglotaran is assumed. Familiarity with basic algebra, graphs, matrices, and the idea of fitting a model to measurements is sufficient.
 
 The source code in `pyglotaran/` is authoritative for the present architecture. Tests and staging-compatible examples are the next-best evidence for behavior and terminology. Published literature is authoritative for the scientific problem, mathematical vocabulary, and software lineage. Published descriptions of older pyglotaran releases are not authoritative for current class names or runtime structure.
 
@@ -26,24 +26,64 @@ The draft should remain useful as the staging architecture matures toward a v1 r
 
 Use the following as a working thesis, not as an unexamined conclusion:
 
-> Pyglotaran translates the iterative practice of global and target analysis into a composable software architecture that separates declarative scientific structure, experimental data, explicit parameters, conditionally linear parameters, numerical realization, and result provenance. This separation permits reusable model elements and plugin-defined capabilities while retaining a common nested optimization workflow.
+> Pyglotaran lets a researcher describe a scientific analysis using named, reusable building blocks. It connects these definitions to measured data and parameter values, constructs and solves the fitting problem, and returns enough detail to examine how the result was obtained. By keeping these responsibilities separate, the same numerical machinery can support many scientific models and extensions.
+
+After the chapter has introduced the necessary terms, this can be stated more formally: the architecture separates declarative scientific structure, experimental data, explicit parameters, conditionally linear parameters, numerical realization, and result provenance within a common nested optimization workflow.
 
 Every major section should contribute evidence for, qualify, or expose a trade-off in this thesis.
 
-## 2. Deliverables
+## 2. Deliverables and collision-free working layout
 
-The execution should produce:
+Parallel agents must not write into one shared draft. The coordinating editor creates and freezes the common contracts, each drafting agent owns unique section, evidence, and figure files, and only the coordinating editor writes the assembled chapter.
+
+Use this working layout:
+
+```text
+docs/architecture-chapter-work/
+|- 00-editorial-contract.md
+|- 00-chapter-skeleton.md
+|- sections/
+|  |- 01-scientific-framing-and-lineage.md
+|  |- 02-declarative-architecture.md
+|  |- 03-data-and-parameters.md
+|  |- 04-numerical-estimation.md
+|  |- 05-runtime-results-and-provenance.md
+|  `- 06-extensions-and-evaluation.md
+|- evidence/
+|  |- 01-framing-ledger.md
+|  |- 02-architecture-ledger.md
+|  |- 03-data-parameters-ledger.md
+|  |- 04-numerical-ledger.md
+|  |- 05-runtime-results-ledger.md
+|  |- 06-extensions-ledger.md
+|  `- helpers/
+|- figures/
+|  |- fig-01-lineage.mmd
+|  |- fig-02-separable-observation.mmd
+|  |- fig-03-object-graph.mmd
+|  |- fig-04-nested-estimation.mmd
+|  |- fig-05-runtime-lifecycle.mmd
+|  `- fig-06-extension-boundaries.mmd
+`- reviews/
+   |- architecture-mathematics-review.md
+   |- runtime-evidence-review.md
+   `- readability-style-apa-review.md
+```
+
+The execution should ultimately produce:
 
 1. `docs/pyglotaran-architecture-chapter-draft.md`  
-   The complete chapter draft, including title, short abstract or opening synopsis, numbered sections, original diagrams, tables, equations, conclusion, and APA references.
+   The integrated chapter, including title, short abstract or opening synopsis, numbered sections, original diagrams, tables, equations, conclusion, and APA references.
 
 2. `docs/pyglotaran-architecture-evidence-ledger.md`  
-   A compact audit trail mapping consequential architectural and scientific claims to current source files, tests, examples, or literature. This is an internal writing artifact, not necessarily part of the finished chapter.
+   The merged audit trail mapping consequential claims to current source files, tests, examples, or literature.
 
 3. `docs/pyglotaran-architecture-review-notes.md`  
-   Remaining uncertainties, facts requiring maintainer confirmation, terminology decisions, exact staging commit inspected, tests run, word count, and known omissions.
+   Remaining uncertainties, facts requiring maintainer confirmation, terminology decisions, exact inspected revisions, tests run, approximate word count, and known omissions.
 
-If time is tight, the chapter and evidence ledger are mandatory. The review notes may be appended to the ledger, but uncertainties must never be silently converted into facts.
+Only the coordinating editor may modify the two `00-` contract files, the assembled draft, merged ledger, and final review notes. A drafting agent owns exactly one section file and its matching local ledger at a time. Figure ownership is assigned in the chapter skeleton. Cross-reviewers write review notes; they do not rewrite a peer's section. This prevents merge conflicts and makes conflicting definitions visible before integration.
+
+The same packet owner should normally research and draft a topic, retaining sole ownership of its local ledger through Waves 1-2. A research-only helper writes an immutable note under `evidence/helpers/`; it never edits a packet ledger. The packet owner decides which helper findings to incorporate.
 
 ## 3. Non-blocking editorial questions and adopted defaults
 
@@ -51,8 +91,8 @@ The following questions can still be answered by the editor or maintainer. They 
 
 | Question | Default for the draft |
 |---|---|
-| Will the text stand alone or sit after a methods chapter that already explains global and target analysis? | Make it stand alone, but keep the scientific primer concise. |
-| Does the 10,000-word ceiling include references? | Keep the body and captions at or below 9,200 words, so the answer does not affect compliance. |
+| Will the text stand alone or sit after a methods chapter that already explains global and target analysis? | Make it stand alone. Give a bachelor-level science reader enough spectroscopy and model-fitting context to follow the architecture. |
+| Does the approximately 10,000-word target include references? | Treat references separately. A justified overrun in the chapter body is acceptable when it improves clarity or accuracy. |
 | Should the chapter use first person, “we,” or an impersonal voice? | Use a neutral academic voice. Use “the package” or “the architecture” for software actions. |
 | Should class names appear in headings? | No. Lead with concepts; place current class names in implementation-mapping paragraphs, tables, or figure annotations. |
 | Should paper figures be reproduced? | No. Produce original architecture diagrams derived from the source and cite papers only for concepts or historical descriptions. |
@@ -195,24 +235,70 @@ There is no evidence for a compiler architecture. Replace “model compilation�
 
 Some numerical objects are created during optimization initialization; matrices that depend on changing explicit parameters are recalculated during objective evaluation. Therefore, do not imply that all mathematics is lowered once into an immutable executable plan.
 
+### 6.3 Readability and van Stokkum-inspired style contract
+
+The supplied papers by Ivo van Stokkum and co-authors share several useful expository habits. The chapter should follow these habits at the level of scholarly method and readability. It should not copy sentences, reproduce distinctive phrasing, or imitate surface mannerisms.
+
+**Begin with the scientific question.** Van Stokkum's writing commonly starts from what is measured, what cannot be read directly from the measurements, and what the researcher wants to learn. Follow the order:
+
+1. physical or experimental question;
+2. observable data and the difficulty they present;
+3. mathematical abstraction;
+4. software responsibility;
+5. current implementation anchor.
+
+Do not begin a section with a class definition when the reader does not yet know why the class exists.
+
+**Define words that carry more than one meaning.** The 2004 review explicitly pauses to distinguish two senses of “model.” Apply the same care to `DataModel`, experiment, element, parameter, CLP, residual, global dimension, global analysis, and target analysis. When a familiar word receives a specialized meaning, state both the ordinary idea and the technical definition.
+
+**Build explanations from simple components.** Introduce a time- and wavelength-resolved measurement as the recurring example. First explain that the observed signal can be regarded as a combination of changing temporal contributions and their associated spectra. Then introduce matrices, conditional linearity, multiple datasets, constraints, and plugins one step at a time. Use “building block” or “component” language where it clarifies composition, but do not let the metaphor replace a precise definition.
+
+**Connect formalism to physical meaning.** Every equation needs:
+
+- a plain-language lead-in explaining the problem it solves;
+- definitions and dimensions for all new symbols;
+- a sentence afterward explaining the operation and its experimental meaning;
+- a connection to the corresponding software responsibility.
+
+No paragraph should introduce more notation than it immediately explains. Define `argmin`, residual, norm, weighting, constraint set, and variable projection in ordinary language before relying on them.
+
+**Use restrained and qualified claims.** Prefer “can,” “usually,” “in this case,” “under these assumptions,” and “commonly” when a statement is conditional. State limitations and model assumptions directly. Avoid promotional adjectives, universal claims, and unqualified statements that a fit proves a physical mechanism.
+
+**Use concrete signposting.** Tell the reader why the next step is needed. Integrate figures and tables into the explanation rather than attaching them after the fact. End a section by stating what has been established and what question follows.
+
+**Prefer readable sentences over technical compression.** Aim for one principal claim per paragraph. Define acronyms on first use. Prefer concrete verbs such as “loads,” “connects,” “calculates,” “estimates,” and “stores.” Avoid dense noun phrases and long chains of abstractions. Terms such as object graph, semantic resolution, numerical realization, invariant, provenance, registry, entry point, identifiability, nuisance parameter, separability, and variable projection must either be defined immediately or replaced initially with plainer language.
+
+Useful plain-language introductions include:
+
+- “a network of named definitions and references” before **object graph**;
+- “connecting a name to the object or parameter it denotes” before **reference resolution**;
+- “building the numerical fitting problem” before **numerical realization**;
+- “the difference between the measured and calculated values” before **residual**;
+- “information that records where a result came from” before **provenance**.
+
+**Write for a science undergraduate without writing down to the reader.** The prose may be mathematically rigorous, but it must supply the conceptual steps. A reader should not need Python knowledge to understand a figure, and should not need spectroscopy experience to understand why time, wavelength, shared kinetics, and associated spectra form a useful running example.
+
+The integration editor must apply this style contract across all independently drafted sections. Stylistic consistency cannot be delegated to section authors alone.
+
 ## 7. Architectural questions the chapter must answer
 
 The final prose should allow a reader to answer all of the following without consulting the code:
 
-1. What scientific and numerical problem is pyglotaran designed to represent?
-2. Which concerns are deliberately separated, and why are those separations useful?
-3. What is declarative about an analysis, and what remains runtime state?
-4. How do a `Scheme`, model library, experiments, data models, elements, measured data, and parameters relate?
-5. How are names and references converted into executable relationships?
-6. How can multiple model contributions and multiple datasets be combined without giving every scientific model its own optimizer?
-7. Why are explicit parameters and CLPs treated differently?
-8. How do labeled dimensions become matrix axes and linked numerical blocks?
-9. What happens, in order, from `Scheme.optimize(...)` to a `Result`?
-10. Where do weighting, scales, coefficient relations, constraints, penalties, and residual functions enter?
-11. What does the result preserve for validation, interpretation, and reproducibility?
-12. How can third-party scientific elements and I/O formats participate without modifying the central optimizer?
-13. Which responsibilities belong to core pyglotaran, and which belong to notebooks, examples, or `pyglotaran-extras`?
-14. What trade-offs follow from the architecture?
+1. What does a time- and wavelength-resolved measurement contain, and why is it difficult to interpret directly?
+2. What scientific and numerical problem is pyglotaran designed to represent?
+3. Which concerns are deliberately separated, and why are those separations useful?
+4. What is declarative about an analysis, and what remains runtime state?
+5. How do a `Scheme`, model library, experiments, data models, elements, measured data, and parameters relate?
+6. How are names and references converted into executable relationships?
+7. How can multiple model contributions and multiple datasets be combined without giving every scientific model its own optimizer?
+8. Why are explicit parameters and CLPs treated differently?
+9. How do labeled dimensions become matrix axes and linked numerical blocks?
+10. What happens, in order, from `Scheme.optimize(...)` to a `Result`?
+11. Where do weighting, scales, coefficient relations, constraints, penalties, and residual functions enter?
+12. What does the result preserve for validation, interpretation, and reproducibility?
+13. How can third-party scientific elements and I/O formats participate without modifying the central optimizer?
+14. Which responsibilities belong to core pyglotaran, and which belong to notebooks, examples, or `pyglotaran-extras`?
+15. What trade-offs follow from the architecture?
 
 ## 8. Code and example reading map
 
@@ -310,9 +396,9 @@ Examples are evidence for the declarative surface and composition patterns. They
 
 ## 9. Proposed chapter structure and word budget
 
-The section budgets below total approximately 7,900-9,050 words, leaving room for transitions and captions while staying below 10,000. A section may move by about 10%, but the assembled draft must be edited back to the 8,000-9,200-word target rather than allowed to approach the ceiling.
+The section budgets below total approximately 8,000-9,250 words and are planning proportions, not acceptance criteria. Individual sections may move by roughly 20%. Aim for a complete chapter near 10,000 words, but permit a justified overrun when it supplies explanation, evidence, or transitions that a bachelor-level reader needs. During integration, remove duplicated introductions, class catalogs, and low-value detail before compressing necessary scientific or mathematical explanation.
 
-### 9.1 Opening synopsis and scope — 300-350 words
+### 9.1 Opening synopsis and scope — 300-400 words
 
 **Purpose:** state the scientific-computing problem, the chapter's architectural thesis, the staging/v1 framing, and the evidence basis.
 
@@ -325,12 +411,14 @@ The section budgets below total approximately 7,900-9,050 words, leaving room fo
 
 **Avoid:** a marketing introduction, feature checklist, or long history before the reader knows the present problem.
 
-### 9.2 Scientific problem and software lineage — 750-850 words
+### 9.2 Scientific problem and software lineage — 850-1,000 words
 
 **Purpose:** establish the problem that shaped the architecture and give only the history needed to understand design changes.
 
 **Argument:**
 
+- A time-resolved spectroscopic experiment records how a signal changes with both time and wavelength, producing a data surface rather than one easily interpreted curve.
+- The central interpretive problem is to connect patterns in that surface to a small set of physically meaningful contributions and parameters.
 - Time-resolved and related multiway measurements require a model for observations built from scientific and measurement assumptions.
 - Scientific model discovery is iterative: specify, estimate, validate, revise.
 - TIMP supplied an extensible R computational environment and separable-estimation machinery.
@@ -343,7 +431,7 @@ The section budgets below total approximately 7,900-9,050 words, leaving room fo
 
 **Figure candidate:** a small lineage diagram showing responsibilities, not a product timeline full of versions.
 
-### 9.3 Architectural drivers, boundaries, and invariants — 600-700 words
+### 9.3 Why the package is divided into these responsibilities — 600-700 words
 
 **Purpose:** explain why the package is partitioned as it is before presenting classes.
 
@@ -373,9 +461,9 @@ The section budgets below total approximately 7,900-9,050 words, leaving room fo
 - result creation can be traced back to contributing elements;
 - plugins enter through registries and typed interfaces.
 
-**Avoid:** presenting the package directory tree as the architecture.
+**Avoid:** presenting the package directory tree as the architecture. If “invariant,” “declarative,” or another architectural term is useful, explain it first in ordinary language.
 
-### 9.4 The declarative analysis object graph — 1,050-1,200 words
+### 9.4 How an analysis is assembled from connected definitions — 1,050-1,200 words
 
 **Purpose:** give the reader a static mental model.
 
@@ -389,7 +477,7 @@ The section budgets below total approximately 7,900-9,050 words, leaving room fo
 6. Explain elements as typed, composable matrix-producing scientific contributions.
 7. Show measured arrays and explicit `Parameters` entering optimization separately.
 
-**Required distinction:** a serialized YAML or dictionary is one representation of the graph. Pydantic-backed typed objects and plugin-contributed subclasses are the semantic architecture.
+**Required distinction:** a serialized YAML or dictionary is one representation of the analysis. The architecture uses typed Python objects to represent meaningful scientific structures; Pydantic is a current implementation mechanism, and plugins may contribute additional typed structures.
 
 **Required examples:** use one global-analysis and one target-analysis configuration only to illustrate different compositions of the same architecture. Do not reproduce complete YAML.
 
@@ -408,7 +496,7 @@ Separately supplied:
 
 The finished diagram must add ownership, reference, and runtime-input distinctions that the sketch omits.
 
-### 9.5 Composition, typing, and semantic resolution — 650-750 words
+### 9.5 Connecting named definitions before fitting — 650-750 words
 
 **Purpose:** explain how a declarative graph becomes internally coherent without invoking compilation.
 
@@ -421,7 +509,7 @@ The finished diagram must add ownership, reference, and runtime-input distinctio
 - only referenced explicit parameters need participate in the analysis;
 - the resolved graph remains a scientific specification, not yet a fixed numerical matrix.
 
-**Architectural interpretation:** the architecture combines dependency injection by labels with runtime typing and validation. Use this wording only if the evidence ledger supports it; otherwise describe the mechanism without naming the pattern.
+**Architectural interpretation:** named references keep reusable definitions separate until the package connects each name to the element, data model, or parameter it denotes. Describe this concrete mechanism. A named software-design pattern is unnecessary.
 
 **Avoid:**
 
@@ -451,7 +539,7 @@ The finished diagram must add ownership, reference, and runtime-input distinctio
 
 **Figure or table:** a small diagram showing two labeled datasets becoming aligned numerical slices or blocks. Verify exact linking semantics in `optimization/data.py` and tests before drawing it.
 
-### 9.7 Unknown quantities and nested numerical estimation — 1,400-1,550 words
+### 9.7 Two kinds of unknowns and how they are estimated — 1,400-1,550 words
 
 **Purpose:** provide the mathematical and architectural center of the chapter.
 
@@ -468,6 +556,15 @@ The finished diagram must add ownership, reference, and runtime-input distinctio
 9. Explain residual concatenation across objectives or experiments.
 10. Explain uncertainty and degrees-of-freedom accounting without overstating statistical guarantees.
 
+**Pedagogical order:**
+
+1. State in words that an observed signal can be approximated by adding component shapes multiplied by their amplitudes, plus measurement noise.
+2. Give a two-component example in prose or simple scalar notation.
+3. Show how values collected over time and wavelength form a matrix.
+4. Introduce the general matrix equation and define every row, column, and symbol.
+5. Explain the inner and outer estimation problems in words.
+6. Only then introduce `argmin`, weighted norms, constraint sets, and penalty terms.
+
 **Minimum equations:**
 
 For dataset or experimental unit \(q\), introduce a generic separable model:
@@ -477,6 +574,8 @@ For dataset or experimental unit \(q\), introduce a generic separable model:
 \]
 
 where \(\boldsymbol{\theta}\) denotes free explicit outer parameters, \(\mathbf{M}_q\) is assembled from element contributions, and \(\mathbf{B}_q\) contains one or more sets of CLPs. Adjust orientation to the chapter's data convention and keep it consistent.
+
+Before proceeding, explain the dimensions and physical interpretation of \(\mathbf{Y}_q\), \(\mathbf{M}_q\), and \(\mathbf{B}_q\) using the running time-and-wavelength example.
 
 Define the inner problem:
 
@@ -511,6 +610,8 @@ Then define the outer objective schematically:
 \]
 
 Clarify that the implementation may append penalty residuals rather than evaluate a separately represented scalar penalty term; the equation is explanatory.
+
+Define \(\arg\min\) as “the argument, or set of parameter values, that gives the smallest mismatch.” Explain the Frobenius and Euclidean norms as ways of combining many residual values into one measure of mismatch. Do not expect notation alone to teach these operations.
 
 **Notation concordance:** explicitly map \(\boldsymbol{\theta}\) to free explicit `Parameters`, \(\mathbf{B}\) to CLPs, \(\mathbf{M}\) to `OptimizationMatrix` content, and \(\mathbf{r}\) to the residual vector consumed by SciPy's least-squares routine.
 
@@ -562,7 +663,7 @@ Use the exact source to correct ordering. For example, do not say data loading o
 
 **Scientific connection:** validation includes numerical fit quality, residual structure, parameter precision, and physicochemical plausibility. The architecture provides data for validation; it does not decide scientific validity automatically.
 
-### 9.10 Extension architecture and ecosystem boundaries — 550-650 words
+### 9.10 How pyglotaran is extended and used with other tools — 550-650 words
 
 **Purpose:** explain how the compositional claim extends beyond built-in kinetics.
 
@@ -579,7 +680,7 @@ Use the exact source to correct ordering. For example, do not say data loading o
 
 **Use built-ins as evidence, not as a catalog:** kinetics, spectral contributions, coherent artifact, damped oscillation, baseline, and CLP guidance are enough to demonstrate heterogeneity.
 
-**Figure:** a port-and-adapter-style boundary diagram is acceptable if the labels are concrete and source-backed. Do not impose that architectural name on the project unless clearly marked as interpretation.
+**Figure:** use a concrete boundary diagram showing what each extension supplies and what the core supplies in return. A named software-architecture pattern is unnecessary.
 
 ### 9.11 Trade-offs, limitations, and conclusion — 450-550 words
 
@@ -605,22 +706,27 @@ All figures must be original abstractions based on the inspected code. Mermaid i
 1. **Scientific-software lineage and responsibility shift**  
    TIMP as R computational core; Glotaran as Java GUI delegating to TIMP through Rserve; pyglotaran as a Python rewrite of the computational core used through notebooks and a broader Python ecosystem. Keep chronology secondary to responsibility.
 
-2. **Static analysis object graph**  
+2. **A separable time- and wavelength-resolved observation**  
+   Show a measured time-by-wavelength data surface as the sum of a small number of temporal contributions and their associated spectra, plus unexplained noise. This is the reader's visual entry point to separability, CLPs, and the recurring scientific example. Use plain-language labels; code identifiers do not belong in this figure.
+
+3. **Static analysis object graph**  
    `Scheme`, model library, experiments, data models, elements, measured data, and explicit parameters. Distinguish ownership from named references and runtime inputs with different edge styles.
 
-3. **Nested estimation architecture**  
+4. **Nested estimation architecture**  
    Explicit outer parameters feed element matrix calculations; composed matrices and observations feed the CLP estimator; residuals and penalties feed the outer least-squares optimizer; updated parameters close the loop.
 
-4. **Runtime lifecycle**  
+5. **Runtime lifecycle**  
    Input/deserialize, resolve, validate, realize numerical objectives, repeatedly evaluate, optimize, and construct results. Mark one-time, iterative, and post-processing phases.
 
-5. **Extension and ecosystem boundaries**  
+6. **Extension and ecosystem boundaries**  
    Core registries and interfaces, element plugins, data/project I/O, external numerical libraries, notebooks, examples, and extras.
 
-Optional sixth figure:
+Optional seventh figure:
 
-6. **Multi-dataset alignment and block structure**  
+7. **Multi-dataset alignment and block structure**  
    Include only if it clarifies linking more effectively than prose and can be verified exactly from tests.
+
+For every figure, use plain-language labels first and code identifiers only as secondary annotations. Explain all arrows and phases in the caption, do not rely on color alone, and make the figure intelligible without source-code knowledge.
 
 ### Tables
 
@@ -631,138 +737,158 @@ Optional sixth figure:
 
 Avoid a v0.7-to-v0.8 migration table in the main narrative unless reviewers specifically request it. A compact historical terminology note is enough.
 
-## 11. Multi-stage execution plan
+## 11. Parallel multi-stage execution plan
 
-Each stage has an output and a gate. Luna must not proceed by assuming a failed gate will be repaired during final editing.
+The work proceeds in parallel waves with explicit synchronization gates. The coordinating editor may run independent tasks concurrently, but no downstream task may rely on an upstream artifact until its gate has passed. The same plan can be executed serially if only one agent is available.
 
-### Stage 0 — Establish the evidence baseline (20-30 minutes)
+### Wave 0 — Coordinator bootstrap and contract freeze (15-20 minutes)
+
+Only the coordinating editor works on shared files during this wave.
 
 **Actions:**
 
 - Record the exact commit, branch, and package version for `pyglotaran`.
 - Record the commits for `pyglotaran-examples` and `pyglotaran-extras`.
 - Check working-tree status without modifying or resetting existing changes.
-- Inventory the relevant source, tests, examples, and five supplied PDFs.
-- Create the evidence-ledger headings and claim classes.
+- Inventory the relevant source, tests, examples, and supplied PDFs.
+- Create `00-editorial-contract.md` from the terminology, readability, style, evidence, citation, and anti-hallucination rules in this handoff.
+- Create a paragraph-level `00-chapter-skeleton.md`.
+- Freeze the physical setup of the running time-and-wavelength example and its notation, including which quantities Packet A introduces and which mathematical development Packet D owns.
+- Assign one owner to every definition, equation, figure, table, section file, and evidence namespace.
 
-**Output:** metadata block and empty structured ledger.
+Each outline entry must state:
 
-**Gate:** the writer can identify which repository is authoritative and can distinguish staging source from older literature.
+```text
+Section purpose:
+Claims uniquely owned here:
+Definitions introduced here:
+Prior concepts this section may assume:
+Material explicitly deferred elsewhere:
+Required evidence namespace:
+Required equation, figure, or table:
+Opening premise:
+Exit point or bridge:
+Approximate length:
+```
 
-### Stage 1 — Produce a terminology and scientific brief (45-60 minutes)
+**Gate 0 — Contract freeze:**
 
-**Actions:**
+- terminology, mathematical notation, reader level, APA conventions, and style contract are stable for the drafting wave;
+- every concept has one canonical section owner;
+- every agent has an exclusive file set;
+- no current source term has been imported from the v0.7 paper without confirmation.
 
-- Read the relevant sections of the 2004 review, TIMP paper, Glotaran paper, and 2023 pyglotaran paper.
-- Extract paraphrased definitions for global analysis, target analysis, separability, explicit/nonlinear parameters, CLPs, variable projection, multi-experiment analysis, scientific model discovery, and validation.
-- Write the three-generation historical account in no more than 300 working words.
-- Populate the literature rows of the evidence ledger.
-- Verify APA metadata.
+After this gate, agents propose contract changes in their integration notes rather than modifying shared contracts.
 
-**Output:** a one- to two-page terminology brief in the evidence ledger.
+### Wave 1 — Parallel evidence reconstruction (25-40 minutes)
 
-**Gate:** no current source-code term has been imported from the v0.7 paper without confirmation.
+Run as many of these evidence lanes concurrently as capacity permits:
 
-### Stage 2 — Reconstruct the static architecture (60-75 minutes)
+1. **Scientific foundations and lineage:** literature definitions, TIMP, Glotaran, pyglotaran history, APA metadata, and the prose-style brief.
+2. **Declarative architecture:** `Scheme`, library, elements, data models, experiments, typing, references, and resolution.
+3. **Data and unknown quantities:** labeled measured data, dimensions, alignment, explicit parameters, CLPs, relations, constraints, weights, and scales.
+4. **Numerical execution:** matrix construction, inner estimation, outer optimization, residual and penalty assembly, and uncertainty.
+5. **Runtime results:** lifecycle ordering, result structures, validation data, provenance, and persistence.
+6. **Extensions and ecosystem:** simulation reuse, registries, I/O, schemas, examples, extras, notebooks, and verified trade-offs.
 
-**Actions:**
+Each packet owner writes only its namespaced evidence fragment and retains sole ownership through drafting. If a separate research helper is used, the helper writes a distinct read-only note under `evidence/helpers/`; it does not touch the packet ledger. Consequential claims receive a claim ID, confidence level, safe wording, and exact source anchors before prose drafting.
 
-- Read the declarative-analysis files in Section 8.1 and relevant tests.
-- Trace ownership and references from `Scheme` through library, experiments, data models, and elements.
-- Verify what parameters and measured data are passed separately.
-- Trace specialized data-model creation and element extension.
-- Draft Figure 2 and Tables 1-2.
-- Add evidence rows for every arrow and cardinality in the figure.
+**Gate 1 — Evidence readiness:**
 
-**Output:** a static architecture brief of 800-1,000 working words plus draft diagram and tables.
+- every planned diagram edge and mathematical claim has an evidence ID;
+- the data-model/measured-data distinction and explicit-parameter/CLP distinction are correct;
+- uncertainties are explicit `[VERIFY: ...]` items;
+- no agent has edited another agent's evidence file.
 
-**Gate:** every node and relationship in the diagram is supported by current staging source or a focused test.
+### Wave 2 — Parallel section drafting (45-75 minutes)
 
-### Stage 3 — Reconstruct data and parameter architecture (60-75 minutes)
+Section authors work from the frozen skeleton and approved evidence fragments. They draft only their assigned Markdown files. They must not independently write a chapter introduction or final conclusion.
 
-**Actions:**
+Each author delivers:
 
-- Trace measured data from the scheme boundary into `OptimizationData` or `LinkedOptimizationData`.
-- Verify dimension inference, orientation, weighting, scaling, and linked-dataset alignment.
-- Trace explicit parameter parsing, references, expressions, bounds, variation, free-vector construction, and uncertainty update.
-- Trace where CLP labels arise and where CLP values are stored.
-- Populate the relevant portions of Tables 1 and 3.
+- the assigned section draft;
+- a local evidence fragment;
+- assigned figure or table source;
+- citations used for later APA consolidation;
+- a two-sentence proposed incoming bridge and outgoing bridge;
+- a self-check against the packet acceptance criteria;
+- an integration note listing assumptions, deliberate omissions, cross-section dependencies, proposed contract changes, and unresolved questions.
 
-**Output:** two separate briefs: “experimental data organization” and “unknown quantities.”
+**Anti-duplication rules:**
 
-**Gate:** the briefs never use `DataModel` for the measured array and never put CLPs inside `Parameters`.
+- define only concepts assigned to the section;
+- when another section owns a definition, use a one-sentence reminder and an explicit cross-reference;
+- do not repeat the full model-specification, estimation, and validation cycle;
+- place implementation inventories in the evidence ledger rather than the prose;
+- use shared notation exactly and do not invent synonyms for element, experiment, data model, explicit parameter, CLP, or residual;
+- advance the chapter's argument from the section's perspective instead of writing a stand-alone essay.
 
-### Stage 4 — Reconstruct numerical realization and lifecycle (75-90 minutes)
+**Gate 2 — Section freeze:**
 
-**Actions:**
+- all assigned artifacts are present;
+- section-level `[VERIFY]` items are enumerated;
+- approximate length is proportionate, with any material overrun explained;
+- no section relies on unstated prior knowledge;
+- the section ends at the exit point defined by the skeleton.
 
-- Trace `Scheme.optimize` into `Optimization`, objectives, outer least squares, objective evaluation, inner estimation, information calculation, and result construction.
-- Write a source-backed sequence with one-time, repeated, and post-optimization steps.
-- Trace element matrices through combination, linking, reduction, weighting, scaling, and residual formation.
-- Verify variable-projection and NNLS dispatch.
-- Draft the equations and notation concordance.
-- Draft Figures 3-4.
+The editor may begin integrating a frozen section while other section authors finish.
 
-**Output:** runtime trace, mathematical brief, and figures.
+### Wave 3 — Single-owner integration (30-45 minutes)
 
-**Gate:** a reviewer can follow one free explicit parameter from its initial value through matrix recalculation and follow one CLP from a matrix label through inner estimation into the result.
-
-### Stage 5 — Reconstruct results and extension boundaries (45-60 minutes)
-
-**Actions:**
-
-- Inventory top-level, per-experiment, fit-decomposition, metadata, optimization-information, and element-specific result structures.
-- Trace serialization and source-path handling.
-- Trace plugin registries, entry points, I/O interfaces, name conflicts/pinning, and schema generation.
-- Verify how simulation reuses model resolution and matrix construction.
-- Establish precise boundaries for notebooks, examples, and extras.
-- Draft Figure 5 and Table 4.
-
-**Output:** result/provenance and extensibility briefs.
-
-**Gate:** no plotting responsibility is assigned to core unless present in current core; no single generic “plugin API” is claimed when interfaces differ.
-
-### Stage 6 — Storyboard and evidence review (30-40 minutes)
-
-**Actions:**
-
-- Turn the Section 9 outline into paragraph-level claims.
-- Assign evidence-ledger IDs to each paragraph.
-- Place equations, figures, and tables where they advance an argument.
-- Check section budgets before prose drafting.
-- Mark facts that still need maintainer confirmation.
-
-**Output:** paragraph storyboard with word allocation.
-
-**Gate:** every paragraph has a purpose and evidence; no section is merely a class or feature inventory.
-
-### Stage 7 — Draft in bounded work packets (2.5-3.5 hours)
-
-Draft in the work-packet order specified in Section 12. Each packet must:
-
-- stay within its word budget;
-- use the terminology contract;
-- cite literature in APA style;
-- cite or record code evidence in the ledger rather than inventing scholarly citations for local files;
-- include transitions to adjacent packets;
-- leave explicit `[VERIFY: ...]` markers rather than guessing.
-
-Assemble the packets only after each packet passes its local acceptance criteria.
-
-**Output:** first complete chapter.
-
-**Gate:** complete argument, all figures/tables present, chapter body no more than 9,500 words at first assembly.
-
-### Stage 8 — Technical verification (45-75 minutes)
+Only the coordinating editor edits the assembled chapter.
 
 **Actions:**
 
-- Re-read the exact implementation anchors behind every high-consequence claim.
-- Run focused existing tests for schemes, data models, optimization, and plugin registries using the workspace's configured environment. Do not install or upgrade dependencies without approval.
-- Check representative staging examples for current vocabulary.
-- Verify equation orientations and definitions against code and literature.
-- Verify every diagram arrow.
-- Search for prohibited or stale terms.
+- assemble accepted section files in argumentative order;
+- write the opening synopsis, cross-section transitions, and conclusion;
+- introduce scientific ideas before current class names;
+- remove duplicated definitions and repeated setup paragraphs;
+- normalize terminology, notation, tense, voice, figure references, and APA citations;
+- create one deduplicated reference list;
+- make the running time-and-wavelength example consistent;
+- assess length against the approximately 10,000-word soft target.
+
+The editor must synthesize rather than concatenate. Useful detail should survive a modest overrun; repeated introductions, API catalogs, and unmotivated implementation detail should not.
+
+**Gate 3 — Integrated draft:**
+
+- the chapter has one thesis, one terminology system, and one mathematical notation;
+- `Scheme`, `DataModel`, explicit parameters, CLPs, and nested estimation are each fully defined once;
+- figures and tables occur where the prose needs them;
+- the opening and conclusion reflect the integrated argument rather than one section author's viewpoint.
+
+### Wave 4 — Parallel independent review (20-30 minutes)
+
+Reviewers inspect the same integrated draft but write separate issue reports. They do not patch the chapter.
+
+1. **Architecture and mathematics reviewer:** checks equations, code behavior, lifecycle ordering, dimensions, matrix transformations, and diagram arrows.
+2. **Runtime and evidence reviewer:** checks source anchors, tests, results, plugins, stale vocabulary, and unsupported universals.
+3. **Readability, style, and APA reviewer:** reads primarily as a bachelor-level science reader; checks definitions, jargon, transitions, van Stokkum-inspired explanatory habits, citations, and reference formatting.
+
+Prioritize findings:
+
+- **P0:** source contradiction, mathematical error, or scientific error;
+- **P1:** terminology, notation, architecture, or evidence inconsistency;
+- **P2:** readability, duplication, transition, figure, or citation problem;
+- **P3:** optional enrichment.
+
+**Gate 4 — Review completeness:** each review reports findings with priority, location, evidence or rationale, and a proposed correction. Reviewers do not silently rewrite peers' work.
+
+### Wave 5 — Final correction and verification (20-35 minutes)
+
+Only the coordinating editor modifies the integrated draft; other agents may perform targeted fact or equation checks on request.
+
+**Actions:**
+
+- triage P0 and P1 findings first, then P2;
+- re-read implementation anchors behind all high-consequence claims;
+- run focused existing tests for schemes, data models, optimization, and plugin registries using the configured environment;
+- check staging examples for current vocabulary;
+- verify equation orientations and all diagram arrows;
+- resolve high-priority `[VERIFY]` markers or move genuine uncertainties to review notes;
+- merge local evidence fragments;
+- report word count and justify any material overrun;
+- perform a stale-term search.
 
 Suggested stale-term search list:
 
@@ -778,222 +904,301 @@ global dimension (when global analysis is meant)
 
 These strings may occur in historical discussion or an explicit warning, but not as unqualified current architecture.
 
-**Output:** corrected draft and completed evidence ledger.
+**Gate 5 — Reviewable draft:**
 
-**Gate:** no unresolved high-confidence `[VERIFY]` marker; focused tests pass or failures are recorded and scoped.
+- focused tests pass or failures are recorded and scoped;
+- no unresolved high-confidence architectural claim remains;
+- the chapter remains intelligible when class names are treated as annotations rather than the main narrative;
+- any length beyond the soft target is caused by necessary explanation or evidence, not repetition.
 
-### Stage 9 — Academic and evergreen edit (45-60 minutes)
+### Two-to-three-hour schedule
 
-**Actions:**
+| Elapsed time | Coordinating editor | Parallel agents |
+|---:|---|---|
+| 0:00-0:15 | Freeze contracts, interfaces, and skeleton | Inventory assigned sources; do not draft or read changing contracts |
+| 0:15-0:45 | Release frozen contracts and coordinate evidence | Read contracts and build independent evidence fragments |
+| 0:45-1:40 | Monitor boundaries; integrate only sections already frozen | Draft disjoint section files and figures |
+| 1:40-2:00 | Freeze the integrated draft, transitions, synopsis, and conclusion | Finish self-checks and remain available for fact questions |
+| 2:00-2:25 | Make no edits to the review snapshot | Run three independent review lanes against the same snapshot |
+| 2:25-3:00 | Apply findings, merge ledgers, verify, and report | Perform targeted fact checks if requested |
 
-- Replace API-manual prose with responsibility and flow language.
-- Ensure every class name has already been motivated by a concept.
-- Make the two meanings of “model” explicit at first use and consistent thereafter.
-- Remove version-specific details that do not support the architectural argument.
-- Where a current name is useful, identify it as an implementation anchor rather than a promised v1 name.
-- Check APA in-text citations and reference entries.
-- Check every borrowed idea is cited and every figure is original.
-- Reduce repetition and bring the body to 8,000-9,200 words.
-- Write the conclusion last.
+With fewer agents, combine adjacent packets as described in Section 12 and allow a longer first-draft window. Do not shorten the contract, evidence, mathematical-trace, or review gates merely to meet the clock.
 
-**Output:** reviewable chapter draft and review notes.
+## 12. Parallel work packets and artifact ownership
 
-**Gate:** the draft remains intelligible if class names are visually treated as annotations rather than the main narrative.
+Packets A-F are independent after Gate 1 unless an explicit dependency is listed. Run all six concurrently when capacity permits. With fewer workers, combine adjacent packets without merging their files; one worker can own several files sequentially.
 
-### Suggested same-day schedule
+Suggested allocation:
 
-| Elapsed time | Milestone |
+| Available section authors | Allocation |
 |---:|---|
-| 0:00-1:00 | Stages 0-1 complete |
-| 1:00-3:30 | Stages 2-4 complete |
-| 3:30-4:30 | Stages 5-6 complete |
-| 4:30-7:30 | First full draft assembled |
-| 7:30-9:00 | Technical verification and academic edit |
+| 2 | Author 1: A-B-C; Author 2: D-E-F |
+| 3 | Author 1: A-B; Author 2: C-D; Author 3: E-F |
+| 4 | Author 1: A; Author 2: B-C; Author 3: D-E; Author 4: F |
+| 5 | Author 1: A; Author 2: B; Author 3: C-D; Author 4: E; Author 5: F |
+| 6 or more | One author per packet; additional agents perform evidence or figure work |
 
-If less time is available, reduce example detail and the number of figures. Do not skip the terminology, numerical-trace, or verification stages.
-
-## 12. Luna work packets
-
-The smaller writing model should receive one bounded packet at a time, plus this handoff, the current evidence ledger, and only the source subset named for the packet. It should not be asked to “write the whole chapter from the repository” in one pass.
+The coordinating editor is not counted as a section author. It owns the contracts, skeleton, integrated synopsis, transitions, conclusion, reference list, and final draft.
 
 ### Packet A — Scientific framing and lineage
 
-**Produces:** Sections 9.1-9.2 and Figure 1; 1,050-1,200 words.
+**Exclusive artifacts:**
 
-**Read first:** the title pages, introductions, architecture/method sections, and conclusions of the four primary papers.
+- `sections/01-scientific-framing-and-lineage.md`
+- `evidence/01-framing-ledger.md`
+- `figures/fig-01-lineage.mmd`
+- `figures/fig-02-separable-observation.mmd`
+
+**Produces:** the scientific primer and lineage portion of Sections 9.1-9.2, without the final opening synopsis; approximately 900-1,200 words as guidance.
+
+**Read first:** the title pages, introductions, relevant methods, design sections, and conclusions of the four primary papers.
 
 **Required claims:**
 
-- global and target analysis are model-based analysis strategies;
-- scientific model discovery iterates specification, estimation, and validation;
-- TIMP was the R computational environment;
-- Glotaran was a Java GUI that used TIMP through Rserve;
-- pyglotaran is a Python rewrite of the computational core and participates in notebook-centered scientific workflows.
+- explain what a time- and wavelength-resolved measurement contains;
+- explain global and target analysis as model-based strategies in ordinary language;
+- explain scientific model discovery as specification, estimation, validation, and revision;
+- identify TIMP as the R computational environment;
+- identify Glotaran as a Java GUI using TIMP through Rserve;
+- identify pyglotaran as a Python rewrite of the computational core within notebook-centered scientific workflows.
 
 **Forbidden shortcuts:**
 
-- do not say pyglotaran is “Glotaran without the GUI” without immediately explaining the rewrite and ecosystem change;
+- do not say pyglotaran is merely “Glotaran without the GUI”;
 - do not project the current class graph backward onto TIMP or Glotaran;
-- do not spend more than one third of the packet on history.
+- do not spend more than one third of the packet on history;
+- do not assume prior spectroscopy knowledge.
 
-**Acceptance:** at least one citation supports each generation; the present architectural problem is visible by the end.
+**Acceptance:** each generation has literature support; the separable-observation figure is understandable to a science undergraduate without code knowledge.
 
-### Packet B — Architectural thesis and static object graph
+### Packet B — Declarative architecture and resolution
 
-**Produces:** Sections 9.3-9.5, Figure 2, and Tables 1-2; 2,300-2,650 words.
+**Exclusive artifacts:**
+
+- `sections/02-declarative-architecture.md`
+- `evidence/02-architecture-ledger.md`
+- `figures/fig-03-object-graph.mmd`
+
+**Produces:** Sections 9.3-9.5 and Tables 1-2; approximately 2,200-2,700 words as guidance.
 
 **Read first:** Section 8.1 source and tests, plus current representative YAML.
 
 **Required claims:**
 
-- declarative specification is a typed object graph;
-- `Scheme` organizes experiments and a model library;
-- measured data and explicit parameter values enter separately;
-- elements are reusable scientific matrix contributions;
-- data models are per-dataset specifications;
-- references and extensions are resolved and validated before numerical use.
+- motivate the need for a reusable network of named scientific definitions before introducing “object graph”;
+- explain how `Scheme` organizes experiments and a model library;
+- explain that measured data and explicit parameter values enter separately;
+- explain elements as reusable scientific matrix contributions;
+- explain data models as per-dataset specifications;
+- explain reference and extension resolution in plain language before giving implementation names.
 
 **Forbidden shortcuts:**
 
-- no “model compiler” metaphor;
+- no compiler metaphor;
 - no claim that YAML itself is the architecture;
 - no current “megacomplex” or “dataset group” terminology;
-- no exhaustive list of fields.
+- no exhaustive field or class catalog;
+- no introduction to nested optimization, which belongs to Packet D.
 
-**Acceptance:** the prose answers who owns, references, and produces what; every Figure 2 edge has evidence.
+**Acceptance:** the prose answers who owns, references, and produces what; every object-graph edge has evidence.
 
-### Packet C — Data, parameters, and mathematics
+### Packet C — Experimental data and explicit unknowns
 
-**Produces:** Sections 9.6-9.7, Figure 3, Table 3, and the equation set; 2,150-2,400 words.
+**Exclusive artifacts:**
 
-**Read first:** Sections 8.2-8.3 source and tests; variable-projection sections of the 2004 and TIMP papers.
+- `sections/03-data-and-parameters.md`
+- `evidence/03-data-parameters-ledger.md`
+
+**Produces:** Section 9.6 and the first part of Section 9.7; approximately 1,300-1,700 words as guidance.
+
+**Read first:** Sections 8.2-8.3 source and tests, stopping before detailed estimator implementation.
 
 **Required claims:**
 
-- measured arrays and data models are distinct;
-- labeled dimensions are converted into model/global numerical organization;
-- explicit parameters and CLPs are distinct;
-- element matrices expose conditional linearity to shared estimation machinery;
-- inner CLP estimation and outer least squares form a nested workflow;
-- weighting, scales, relations, constraints, and penalties occur at verified points.
+- distinguish measured arrays from data models;
+- explain labeled dimensions, orientation, weights, scales, and multi-dataset alignment;
+- distinguish explicit parameters from CLPs;
+- explain fixed, free, bounded, nonnegative, and expression-defined explicit parameters;
+- define model and global dimensions without fixing them to time and wavelength;
+- prepare the reader for separability without teaching the complete inner/outer algorithm.
 
 **Forbidden shortcuts:**
 
 - never say all entries in `Parameters` are intrinsically nonlinear;
 - never say CLPs are stored in `Parameters`;
-- never identify model dimension with time or global dimension with wavelength without “commonly” or a concrete example;
-- never claim the Python variable-projection routine is TIMP's partitioned algorithm unless code proves this.
+- never equate model dimension with time or global dimension with wavelength except in a clearly marked example;
+- do not duplicate the static object-graph definition from Packet B.
 
-**Acceptance:** notation is consistent; each symbol maps to a runtime concept; a reader can explain why the inner solve exists.
+**Acceptance:** a novice reader can explain the measured-data/data-model and explicit-parameter/CLP distinctions before reaching the mathematics.
 
-### Packet D — Lifecycle, results, and provenance
+### Packet D — Nested numerical estimation
 
-**Produces:** Sections 9.8-9.9 and Figure 4; 1,400-1,600 words.
+**Exclusive artifacts:**
 
-**Read first:** `scheme.py`, all core optimization orchestration files, `result.py`, result classes, and focused tests.
+- `sections/04-numerical-estimation.md`
+- `evidence/04-numerical-ledger.md`
+- `figures/fig-04-nested-estimation.mmd`
+
+**Produces:** the mathematical center of Section 9.7 and Table 3; approximately 1,500-2,000 words as guidance.
+
+**Read first:** the optimization matrix and estimator sources/tests, plus the variable-projection sections of the 2004 and TIMP papers. Use the Packet C-to-D interface and shared notation frozen in `00-chapter-skeleton.md`; reconcile Packet C's eventual exit note during integration rather than waiting for it.
+
+**Required claims:**
+
+- build from the two-component observation example to matrix notation;
+- explain element matrices and CLP column labels;
+- explain inner CLP estimation and outer least squares in words before equations;
+- explain variable projection and non-negative least squares at the supported level;
+- place relations, constraints, scales, weights, and penalties at verified stages;
+- map every symbol to physical meaning and a runtime representation.
+
+**Forbidden shortcuts:**
+
+- no unexplained `argmin`, norm, or constraint-set notation;
+- no claim that the Python routine is TIMP's partitioned algorithm unless proven;
+- no assumption that all matrices are constructed once;
+- no repetition of parameter types already owned by Packet C.
+
+**Acceptance:** a bachelor-level reader can explain why the inner solve exists, and a technical reviewer can trace each equation to code and literature.
+
+### Packet E — Runtime, results, and provenance
+
+**Exclusive artifacts:**
+
+- `sections/05-runtime-results-and-provenance.md`
+- `evidence/05-runtime-results-ledger.md`
+- `figures/fig-05-runtime-lifecycle.mmd`
+
+**Produces:** Sections 9.8-9.9; approximately 1,300-1,700 words as guidance.
+
+**Read first:** `scheme.py`, core optimization orchestration, `result.py`, result classes, and focused tests.
 
 **Required claims:**
 
 - distinguish initialization, repeated objective evaluation, and post-optimization result construction;
 - trace data, explicit parameters, matrices, CLPs, residuals, optimizer output, diagnostics, and result datasets;
 - explain why rich results support validation and reproducibility;
+- explain provenance first as recording where results came from;
 - identify element provenance without claiming more than stored metadata supports.
 
 **Forbidden shortcuts:**
 
 - do not say all matrices are prepared once;
-- do not portray validation as automated proof of the physicochemical model;
-- do not assign plotting to core.
+- do not portray validation as automated proof of a physicochemical model;
+- do not assign plotting to core;
+- do not rederive the equations from Packet D.
 
-**Acceptance:** ordering matches source; result field claims have implementation anchors.
+**Acceptance:** ordering matches source; result-field claims have implementation anchors; the lifecycle figure separates one-time, repeated, and post-processing steps.
 
-### Packet E — Extensions, ecosystem, and evaluation
+### Packet F — Extensions, ecosystem, and evaluation
 
-**Produces:** Sections 9.10-9.11, Figure 5, and Table 4; 1,000-1,200 words.
+**Exclusive artifacts:**
 
-**Read first:** Section 8.4 source/tests, built-in element registration, and relevant sections of the 2023 paper.
+- `sections/06-extensions-and-evaluation.md`
+- `evidence/06-extensions-ledger.md`
+- `figures/fig-06-extension-boundaries.mmd`
+- Table 4, “Extension surfaces,” embedded in the section file
+
+**Produces:** Sections 9.10-9.11 except the final integrative conclusion, Figure 6, and Table 4; approximately 1,000-1,400 words as guidance.
+
+**Read first:** Section 8.4 source/tests, built-in registration, and relevant parts of the 2023 paper.
 
 **Required claims:**
 
-- element, data-I/O, and project-I/O extensions have distinct contracts;
-- entry points and registries mediate discovery and naming;
-- element plugins can affect typed declarative capabilities;
-- simulation reuses relevant core mechanisms;
-- examples, extras, notebooks, and numerical libraries occupy different ecosystem roles;
-- discuss verified trade-offs.
+- distinguish element, data-I/O, and project-I/O contracts;
+- explain registries and entry points in ordinary language;
+- explain how element plugins can affect typed declarative capabilities;
+- explain simulation's reuse of relevant core mechanisms;
+- distinguish examples, extras, notebooks, and numerical-library roles;
+- discuss verified trade-offs as paired benefits and costs.
 
 **Forbidden shortcuts:**
 
-- do not use “microkernel,” “ports and adapters,” or another named pattern as fact unless the project uses that term; it may be presented as an interpretive analogy;
-- do not promise binary compatibility, semantic-version guarantees, or future plugin stability;
-- do not invent performance claims.
+- do not assert named architecture patterns as project facts;
+- do not promise compatibility, future plugin stability, or v1 APIs;
+- do not invent performance claims;
+- do not write the chapter conclusion.
 
-**Acceptance:** at least four trade-offs are explained as paired benefits and costs, not a list of weaknesses.
+**Acceptance:** at least four trade-offs are explained; plugin concepts remain intelligible without Python packaging knowledge.
 
-### Packet F — Synthesis and copy edit
+### Coordinator packet — Integration, synopsis, and conclusion
 
-**Produces:** the assembled chapter, final transitions, conclusion, captions, APA reference list, and word-count report.
+**Exclusive artifacts:** the `00-` files, assembled chapter, merged ledger, final review notes, and reference list.
 
-**Inputs:** all accepted packets, figures, tables, and completed ledger.
+**Wave 3 inputs:** all frozen packet artifacts.
+
+**Wave 5 inputs:** the frozen integrated draft plus the independent review reports.
 
 **Actions:**
 
-- remove overlap, especially repeated explanations of the object graph and nested optimization;
-- ensure scientific terminology appears before implementation names;
-- normalize notation and capitalization;
+- write the opening synopsis and final conclusion only after reading all packets;
+- establish one argumentative arc;
+- remove overlapping explanations;
+- make scientific concepts precede current implementation names;
+- normalize notation, capitalization, tense, voice, and figure numbering;
 - replace `[VERIFY]` markers only from evidence;
-- check the word ceiling;
-- list unresolved issues in review notes.
+- consolidate and format APA references;
+- apply the van Stokkum-inspired style and bachelor-level readability contracts;
+- report word count and assess whether any overrun is justified.
 
 **Acceptance:** all global quality gates in Section 14 pass.
 
-## 13. Instructions and guardrails for GPT-5.6 Luna
+## 13. Shared instructions and guardrails for all agents
 
-Give Luna these rules verbatim or preserve their force:
+Give every research, drafting, review, and integration agent the rules relevant to its role. These rules are independent of model or inference mode.
 
-1. **Evidence before prose.** For each subsection, write a private bullet list of claims and evidence-ledger IDs before writing paragraphs.
-2. **Source code leads architectural terminology.** A term in a paper or docstring is not current merely because it sounds plausible.
-3. **Literature leads scientific terminology.** Use the supplied papers for definitions of global analysis, target analysis, separability, model discovery, and validation.
-4. **Distinguish description from interpretation.** If the code does not name a design pattern, frame it as a useful interpretation rather than project terminology.
-5. **No compilation metaphor.** Say “instantiate,” “resolve,” “bind,” “validate,” “construct,” “realize,” or “evaluate,” according to the observed operation.
-6. **No future invention.** The chapter may explain why concepts are likely to be durable, but it must not promise v1 names, compatibility, roadmap features, or performance.
-7. **No stale vocabulary.** `Element` and `Experiment` are current. Use `megacomplex`, dataset group, and old CLP-linking APIs only in explicitly historical passages.
-8. **Keep data concepts separate.** A `DataModel` configures a dataset; an xarray object contains measured data; an experiment coordinates one or more dataset specifications; numerical wrappers prepare data for estimation.
-9. **Keep unknowns separate.** `Parameters` contains explicit parameters. CLPs are inner estimated coefficients represented through matrix labels, estimators, decompositions, and results.
-10. **Qualify scientific equivalence.** An explicit outer parameter is often intrinsically nonlinear, but the software distinction is how it participates in computation.
-11. **Use dimensions carefully.** “Model” and “global” dimensions are general coordinate roles, not fixed physical quantities.
-12. **Treat notebooks correctly.** Jupyter is a user environment around the package, not an internal pyglotaran architectural component.
-13. **Treat results as scientific evidence structures.** Explain decompositions and residuals, but do not claim the software establishes scientific truth.
-14. **Prefer paragraphs over catalogs.** Class and field lists belong in tables only when they clarify a responsibility boundary.
-15. **Use original diagrams.** Do not reproduce paper figures or closely imitate their graphic composition.
-16. **Use APA consistently.** Author-date in text; sentence case in reference titles; italic journal and volume; DOI as an HTTPS URL.
-17. **Avoid direct quotations.** Paraphrase with citation. If a short quotation is indispensable, include an APA page number.
-18. **Expose uncertainty.** Insert `[VERIFY: precise question and likely source]`; never fill a gap with a generic software-architecture claim.
-19. **Protect the user's workspace.** Read broadly but modify only the planned documentation artifacts. Do not reset, format, or “clean up” source repositories.
-20. **Stay within budget.** Stop adding detail when it does not help answer one of the fourteen architectural questions in Section 7.
+1. **Read the contracts first.** Read `00-editorial-contract.md` and `00-chapter-skeleton.md` before inspecting assigned evidence or drafting.
+2. **Respect exclusive ownership.** Modify only assigned working files. Propose shared-contract changes in the integration note.
+3. **Evidence before prose.** For each subsection, record claims and evidence-ledger IDs before writing paragraphs.
+4. **Source code leads architectural terminology.** A term in a paper or docstring is not current merely because it sounds plausible.
+5. **Literature leads scientific terminology.** Use the supplied papers for definitions of global analysis, target analysis, separability, model discovery, and validation.
+6. **Distinguish description from interpretation.** If the code does not name a design pattern, frame it as a useful interpretation rather than project terminology.
+7. **No compilation metaphor.** Say “instantiate,” “resolve,” “bind,” “validate,” “construct,” “realize,” or “evaluate,” according to the observed operation.
+8. **No future invention.** The chapter may explain why concepts are likely to be durable, but it must not promise v1 names, compatibility, roadmap features, or performance.
+9. **No stale vocabulary.** `Element` and `Experiment` are current. Use `megacomplex`, dataset group, and old CLP-linking APIs only in explicitly historical passages.
+10. **Keep data concepts separate.** A `DataModel` configures a dataset; an xarray object contains measured data; an experiment coordinates one or more dataset specifications; numerical wrappers prepare data for estimation.
+11. **Keep unknowns separate.** `Parameters` contains explicit parameters. CLPs are inner estimated coefficients represented through matrix labels, estimators, decompositions, and results.
+12. **Qualify scientific equivalence.** An explicit outer parameter is often intrinsically nonlinear, but the software distinction is how it participates in computation.
+13. **Use dimensions carefully.** “Model” and “global” dimensions are general coordinate roles, not fixed physical quantities.
+14. **Treat notebooks correctly.** Jupyter is a user environment around the package, not an internal pyglotaran architectural component.
+15. **Treat results as scientific evidence structures.** Explain decompositions and residuals, but do not claim the software establishes scientific truth.
+16. **Write for the defined reader.** Explain the scientific idea in ordinary language before its formal term, equation, or class name.
+17. **Follow the shared style.** Begin from the scientific question, define ambiguous terms, connect mathematics to physical meaning, qualify conditional claims, and use concrete signposting.
+18. **Do not duplicate another section.** Define only concepts assigned by the skeleton. Use a short reminder and cross-reference for concepts owned elsewhere.
+19. **Prefer paragraphs over catalogs.** Class and field lists belong in tables only when they clarify a responsibility boundary.
+20. **Use original diagrams.** Do not reproduce paper figures or closely imitate their graphic composition.
+21. **Use APA consistently.** Author-date in text; sentence case in reference titles; italic journal and volume; DOI as an HTTPS URL.
+22. **Avoid direct quotations.** Paraphrase with citation. If a short quotation is indispensable, include an APA page number.
+23. **Expose uncertainty.** Insert `[VERIFY: precise question and likely source]`; never fill a gap with a generic software-architecture claim.
+24. **Protect the user's workspace.** Read broadly but modify only the planned documentation artifacts. Do not reset, format, or “clean up” source repositories.
+25. **Treat length as guidance.** Add detail when it improves clarity, evidence, or the architectural argument. Remove repetition and low-value API detail first.
 
-### Recommended packet prompt template
+### Recommended parallel packet prompt
 
 ```text
-You are drafting Packet [letter] of an academic chapter on the staging
-architecture of pyglotaran. Read the handoff and current evidence ledger
-first. Then inspect only the named source, tests, examples, and literature.
+You own [artifact path] in a parallel academic-writing workflow about
+the staging architecture of pyglotaran. Read 00-editorial-contract.md
+and 00-chapter-skeleton.md first. Your exclusive scope is [scope].
+Other agents own [adjacent scopes].
 
-Before drafting, add claim/evidence rows to the ledger. Write [named
-sections] in [word range] words. Use the terminology contract and APA
-author-date citations. Organize the explanation around responsibilities,
-invariants, and information flow; current class names are implementation
-anchors, not the outline.
+Inspect the named source, tests, examples, and literature. Record claims
+under evidence namespace [PREFIX] before drafting. Write approximately
+[word range], treating this as guidance rather than a hard limit. Follow
+the shared terminology, notation, APA, reader-level, and style contracts.
 
-Do not guess. Leave [VERIFY: ...] for unresolved facts. Do not use
-"model compilation," current "megacomplex," current "dataset group," or
-place CLPs inside Parameters. Do not make v1 promises.
+Do not modify shared files or the assembled chapter. Do not redefine
+concepts owned by other sections. Do not write an independent chapter
+introduction or conclusion. Use [VERIFY: ...] instead of guessing.
 
-Return:
-1. ledger additions;
-2. draft prose;
-3. figure/table source if required;
-4. a five-item self-check against this packet's acceptance criteria.
+Produce:
+1. your evidence fragment;
+2. your section draft;
+3. assigned figure or table source;
+4. citations used;
+5. a five-item self-check;
+6. an integration note listing assumptions, deliberate omissions,
+   cross-section dependencies, proposed contract changes, and unresolved
+   questions.
 ```
 
 ## 14. Global quality gates
@@ -1042,9 +1247,22 @@ Return:
 - [ ] Transitional names, stale docstrings, and example remnants have been checked.
 - [ ] Removal of a specific class name would not destroy the explanation of its responsibility.
 
-### 14.6 Editorial and format quality
+### 14.6 Readability and explanatory style
 
-- [ ] Chapter body and captions are 8,000-9,200 words and below 10,000.
+- [ ] A bachelor-level mathematics, physics, or other science reader can follow the chapter without prior knowledge of spectroscopy, nonlinear optimization, or pyglotaran.
+- [ ] Every technical term and acronym is defined at first use.
+- [ ] Each section begins from the scientific or architectural question it answers.
+- [ ] Every equation has a verbal lead-in, complete symbol definitions, and a physical interpretation afterward.
+- [ ] No paragraph introduces more notation than it immediately explains.
+- [ ] Every figure can be understood without knowing Python class names.
+- [ ] The time-and-wavelength example remains consistent throughout.
+- [ ] The text follows the van Stokkum-inspired habits of careful definitions, progressive building blocks, restrained claims, and concrete signposting.
+- [ ] Dense noun phrases, avoidable jargon, and unnecessary code identifiers have been removed.
+- [ ] A code-independent reviewer can explain the distinctions between measured data and a data model, explicit parameters and CLPs, global and target analysis, and specification and numerical execution.
+
+### 14.7 Editorial and format quality
+
+- [ ] The chapter is proportioned around the approximately 10,000-word soft target; any material overrun is justified in review notes.
 - [ ] APA author-date citations and references are consistent.
 - [ ] Headings are concept-led and no deeper than necessary.
 - [ ] Tables do not repeat prose.
@@ -1072,7 +1290,7 @@ Replace an unsupported universal statement with a scoped observation, or remove 
 
 The work is done when:
 
-1. the complete draft exists and is below 10,000 words;
+1. the complete, coherent draft exists and its length has been assessed against the approximately 10,000-word soft target;
 2. the source-led terminology contract is followed throughout;
 3. the scientific framing and lineage are supported by APA citations;
 4. the static object graph, semantic-resolution path, numerical-estimation path, result path, and extension boundaries are all explained;
@@ -1083,4 +1301,4 @@ The work is done when:
 9. uncertainties are visible in review notes instead of hidden in prose; and
 10. a pyglotaran maintainer can review the chapter by following claim IDs to a small, relevant source set rather than rereading the entire repository.
 
-The most important success criterion is not exhaustive API coverage. It is that a graduate-level reader can explain why the architecture has its present separations, how an analysis moves through them, and how those separations support the scientific cycle of model specification, parameter estimation, and validation.
+The most important success criterion is not exhaustive API coverage or exact adherence to a word count. It is that a bachelor-level science reader can explain why the architecture has its present separations, how an analysis moves through them, and how those separations support the scientific cycle of model specification, parameter estimation, and validation.
