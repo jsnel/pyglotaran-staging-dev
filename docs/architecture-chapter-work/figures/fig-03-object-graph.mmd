@@ -1,0 +1,30 @@
+%% Figure 3. Static analysis object graph plus separately supplied runtime
+%% inputs. Solid arrows mean ownership, dashed arrows mean a stored name or
+%% scientific reference, and thick arrows mean association or binding at the fit
+%% boundary. An optional data-source association is not ownership of the measured
+%% array's scientific meaning.
+flowchart TB
+    subgraph D["Declarative analysis specification"]
+        S["Analysis root<br/>(current Scheme)"]
+        L["Model library<br/>(current ModelLibrary)"]
+        X["Experiment<br/>(current ExperimentModel)"]
+        M["Per-dataset scientific specification<br/>(current DataModel)"]
+        E["Named scientific contribution<br/>(current Element)"]
+
+        S -->|owns| L
+        S -->|owns a labeled mapping of| X
+        X -->|owns a labeled mapping of| M
+        L -->|owns by label| E
+        M -.->|names ordinary or global contributions| E
+    end
+
+    subgraph R["Separately supplied runtime inputs"]
+        F["Fit invocation<br/>(current Scheme.optimize)"]
+        Y["Measured labeled arrays<br/>usually xarray datasets"]
+        P["Explicit parameter collection<br/>(current Parameters)"]
+    end
+
+    S ==>|supplies the structural graph| F
+    Y ==>|associated by dataset label| F
+    P ==>|supplied as current values| F
+    F ==>|binds names and associates arrays| M

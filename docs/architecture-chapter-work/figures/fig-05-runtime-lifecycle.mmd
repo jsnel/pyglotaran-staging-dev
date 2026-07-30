@@ -1,0 +1,39 @@
+flowchart TD
+    subgraph ONCE["One-time association, resolution, and initialization"]
+        A["Scheme, explicit Parameters,<br/>and measured-data inputs"]
+        B["Load or normalize datasets;<br/>associate them with dataset specifications"]
+        C["Resolve Experiment references<br/>against the model library and Parameters"]
+        D["Collect supported issues;<br/>stop if issues are reported"]
+        E["Create one numerical objective per Experiment<br/>(OptimizationObjective)"]
+        F["Create single or linked data wrappers;<br/>select free outer values and bounds"]
+        A --> B --> C --> D --> E --> F
+    end
+
+    subgraph REPEAT["Repeated outer objective evaluation"]
+        G["SciPy requests a trial residual vector"]
+        H["Update free explicit outer values"]
+        I["Recalculate and reduce<br/>parameter-dependent matrices"]
+        J["Estimate and resolve CLPs"]
+        K["Form residual and supported penalty entries"]
+        L["Concatenate contributions<br/>across Experiment objectives"]
+        G --> H --> I --> J --> K --> L
+        L -- "trial vector returned" --> G
+    end
+
+    subgraph AFTER["Post-optimization calculation and result construction"]
+        M["Outer call stops;<br/>retain termination information"]
+        N["Evaluate the final state and<br/>construct dataset-keyed decompositions"]
+        O["Calculate diagnostics, covariance,<br/>and supported parameter errors"]
+        P["Return Result with Scheme, parameter states,<br/>optimization information, and dataset results"]
+        M --> N --> O --> P
+    end
+
+    F --> G
+    G -. "termination or handled failure" .-> M
+
+%% Figure 5 caption:
+%% Runtime lifecycle in the inspected staging implementation. Solid arrows show normal
+%% execution order; the backward solid arrow is the optimizer's repeated request/response
+%% cycle; the dotted arrow leaves that cycle when the outer call terminates or a handled
+%% exception ends it. Boxes are grouped by one-time, repeated, and post-optimization work.
+

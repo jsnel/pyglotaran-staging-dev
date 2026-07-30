@@ -1,0 +1,18 @@
+%% Figure 1. Responsibility-centered lineage. Solid arrows mean that one system
+%% used or orchestrated another at run time; dashed arrows mark a historical
+%% transfer or reimplementation of responsibility, not a claim of API continuity.
+flowchart LR
+    T["TIMP<br/>R computational environment<br/>model specification, estimation, validation"]
+    G["Glotaran<br/>Java desktop working environment<br/>data exploration, visual model editing, result inspection"]
+    R["Rserve<br/>Java-to-R communication"]
+    P["pyglotaran<br/>Python computational core<br/>typed specifications, estimation, results"]
+    N["Notebook-centered scientific workflow<br/>external working and reporting environment"]
+    E["Python scientific ecosystem<br/>labeled arrays, numerical libraries, visualization tools"]
+
+    G -->|delegated requests| R
+    R -->|invoked computation| T
+    T -.->|computational role reimplemented in Python| P
+    G -.->|desktop-GUI responsibility not recreated in the core| N
+    N -->|orchestrates analyses with| P
+    N -->|combines core output with| E
+    P -->|uses numerical foundations from| E

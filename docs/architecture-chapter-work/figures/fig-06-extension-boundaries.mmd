@@ -1,0 +1,57 @@
+flowchart LR
+    EP["Installed entry-point metadata<br/>(three plugin groups)"]
+
+    subgraph PROVIDERS["Registered providers"]
+        EL["Scientific Element provider<br/>matrix + result behavior;<br/>optional DataModel fields"]
+        DI["Data-I/O provider<br/>labeled-array load/save"]
+        PI["Project-I/O provider<br/>Parameters, Scheme, Result load/save"]
+    end
+
+    subgraph CORE["Core pyglotaran"]
+        ER["Element registry"]
+        DR["Data-I/O registry"]
+        PR["Project-I/O registry"]
+        SPEC["Typed specification,<br/>resolution, and generated schema"]
+        NUM["Matrix realization,<br/>simulation, and optimization"]
+        RES["Structured results<br/>and persistence dispatch"]
+        ER --> SPEC --> NUM --> RES
+        DR --> SPEC
+        PR --> SPEC
+        PR --> RES
+        DR --> RES
+    end
+
+    subgraph FOUNDATIONS["External numerical foundations"]
+        XA["xarray<br/>labeled arrays"]
+        NP["NumPy / SciPy / Numba<br/>arrays, solvers, selected kernels"]
+    end
+
+    subgraph WORKFLOW["External scientific workflow"]
+        NB["Jupyter notebooks<br/>coordination and narrative"]
+        EX["pyglotaran-examples<br/>case-study compositions"]
+        PX["pyglotaran-extras<br/>plotting and exploration"]
+    end
+
+    EP -. "loads provider modules" .-> EL
+    EP -. "loads provider modules" .-> DI
+    EP -. "loads provider modules" .-> PI
+    EL -- "registers typed class" --> ER
+    DI -- "registers format instance" --> DR
+    PI -- "registers format instance" --> PR
+
+    XA -- "labeled observations and results" --> SPEC
+    XA --> RES
+    NP -- "numerical operations" --> NUM
+
+    EX -- "demonstrates composition" --> SPEC
+    NB -- "calls core and combines outputs" --> SPEC
+    NB --> RES
+    RES -- "inspectable datasets" --> PX
+
+%% Figure 6 caption:
+%% Extension and ecosystem boundaries in the inspected staging implementation. Solid
+%% arrows show registration, use, or data flow as labeled; dotted arrows show discovery
+%% through installed entry-point metadata. The three registries are distinct. Numerical
+%% libraries, notebooks, examples, and extras surround the core rather than registering
+%% alternative outer optimizers.
+

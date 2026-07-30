@@ -1,0 +1,36 @@
+%% Figure 4. Nested estimation at one or more objective units. Solid arrows
+%% carry numerical values or configured transformations. The dashed return
+%% arrow means that the outer least-squares routine proposes another trial of
+%% the explicit parameters; it does not mean that matrices are cached.
+flowchart LR
+    subgraph O["Initialized numerical context"]
+        Y0["Measured labeled arrays"]
+        D["Oriented and weighted data blocks<br/>(OptimizationData or linked form)"]
+        RC["Configured relations,<br/>constraints, and scales"]
+        PC["Configured penalty definitions"]
+        Y0 -->|orient, slice, align, and weight| D
+    end
+
+    subgraph E["Repeated objective evaluation"]
+        T["Trial explicit outer values<br/>theta"]
+        P["Update explicit Parameters<br/>and expression consequences"]
+        M["Calculate and combine<br/>labeled element matrices"]
+        R["Apply scales and weights;<br/>reduce relations and constraints"]
+        I["Inner coefficient estimate<br/>variable projection or NNLS"]
+        B["Estimated CLPs and<br/>data residuals"]
+        A["Concatenate data residuals<br/>and supported penalty entries"]
+
+        T -->|trial vector| P
+        P -->|current values| M
+        M -->|matrix columns and CLP labels| R
+        RC -->|configured transformations| R
+        D -->|observed blocks| I
+        R -->|reduced matrices| I
+        I -->|solve conditionally linear problem| B
+        B -->|residual entries and resolved CLPs| A
+        PC -->|soft conditions| A
+    end
+
+    L["Outer least-squares routine<br/>(SciPy least_squares)"]
+    A -->|one residual vector| L
+    L -.->|propose another trial| T
