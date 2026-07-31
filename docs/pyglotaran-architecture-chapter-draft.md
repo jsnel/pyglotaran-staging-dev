@@ -1,52 +1,17 @@
 # The architecture of pyglotaran: A composable framework for global and target analysis
 
-## 0. Synopsis and scope
+## 0. Scope
 
-A time-resolved spectroscopy experiment can record a signal at hundreds of delay times and
-wavelengths, producing a measured surface with far more values than the number of physical
-processes a researcher hopes to distinguish. The central difficulty is therefore not merely
-to store or plot the surface. It is to formulate a compact explanation for overlapping
-contributions, estimate its unknown quantities, and decide what the remaining mismatch says
-about that explanation. This is an inverse problem: agreement with the measurements can
-support a proposed mechanism, but agreement alone does not prove that the mechanism is
-unique or physically correct (van Stokkum et al., 2004).
-
-Global analysis addresses this difficulty by fitting related measurements simultaneously
-under shared scientific structure. Target analysis places a more explicit physicochemical
-hypothesis—such as a network of interconverting states—under test. Both belong to an
-iterative cycle in which a researcher specifies a model, estimates its unknowns, inspects
-the result, and revises the model when its numerical or physical implications are
-inadequate. The software architecture matters because every revision should not require a
-new data pipeline and optimizer.
-
-This chapter argues that the inspected staging architecture supports that cycle by dividing
-the work into explicit responsibilities. Reusable definitions state what belongs to an
-analysis; observations and current values are supplied separately for a particular fit. The
-package connects stored names to the objects they denote and reports supported structural
-problems before building the numerical fitting problem. That construction—its *numerical
-realization*—orients labeled data and gives two kinds of unknowns different roles:
-shape-changing explicit values are varied by an outer least-squares routine, while
-amplitudes that become linear once those shapes are known are estimated inside each trial.
-The returned structures retain observations, residuals, decompositions, and diagnostics for
-inspection. Bounded extension points let new scientific contributions and file formats join
-the same route without making the optimizer an unrestricted plugin surface.
-
-The account is architectural rather than a user tutorial. Present syntax, class names, and
-runtime behavior are based on pyglotaran revision
-`468c4cd57aaf25c10edf85cd197df771bad0a766` in the inspected `0.8.0.dev0` staging
-workspace, with
-focused tests and staging-compatible examples used as corroboration. The 2023 paper
-describes scientific aims, history, and a v0.7-era design; it is not used as authority for
-current syntax or class names (van Stokkum et al., 2023). No claim is made here about
-future interfaces, compatibility, performance, or unreleased behavior. Jupyter is
-treated as an external scientific working environment, and most plotting and higher-level
+This chapter argues that the inspected staging architecture supports the cycle of scientific
+model discovery by dividing the work into explicit responsibilities. The account is
+architectural rather than a user tutorial. Present syntax, class names, and runtime behavior
+are based on pyglotaran revision `468c4cd57aaf25c10edf85cd197df771bad0a766` in the inspected
+`0.8.0.dev0` staging workspace, with focused tests and staging-compatible examples used as
+corroboration. The 2023 paper describes scientific aims, history, and a v0.7-era design; it is
+not used as authority for current syntax or class names (van Stokkum et al., 2023). No claim is
+made here about future interfaces, compatibility, performance, or unreleased behavior. Jupyter
+is treated as an external scientific working environment, and most plotting and higher-level
 exploration are assigned to the companion `pyglotaran-extras` package rather than the core.
-
-Section 1 establishes the scientific problem and software lineage. Sections 2 and 3 follow
-the analysis from declarative definitions to labeled observations and unknowns. Section 4
-develops the nested estimation mathematics, Section 5 places it in the runtime lifecycle
-and result structure, and Section 6 examines extension boundaries and their trade-offs. The
-conclusion returns to the model-discovery cycle and assesses what these separations achieve.
 
 ## 1. From a measured surface to a scientific analysis
 
@@ -56,19 +21,17 @@ A pump–probe experiment begins when a short *pump* pulse initiates a change in
 After a chosen delay, a weaker *probe* measurement records the response across many
 wavelengths. Repeating the probe at successive delays stacks the spectra into a surface. In
 the running example, its rows correspond to sampled delay times \(t_i\), and its columns to
-sampled wavelengths \(\lambda_j\). A point on the surface is therefore one observed signal
-value at one delay and one wavelength. The experiment may contain thousands of such values
+sampled wavelengths \(\lambda_j\). The experiment may contain thousands of such values
 even when the scientific question concerns only a few states or processes. Time-resolved
 spectra are an important instance of this broader class of multidimensional measurements
 (van Stokkum et al., 2004).
 
 The surface does not display a mechanism directly. If two excited states change on similar
 time scales and absorb or emit over overlapping wavelength ranges, their signals appear
-together at the same measured points. A ridge or decay in the surface can then admit several
-explanations. Instrument response, baseline offsets, measurement noise, and an incomplete
-scientific hypothesis can add further structure. The task is consequently an inverse problem:
-the researcher observes the combined response and asks which smaller set of processes could
-have produced it (van Stokkum et al., 2004).
+together at the same measured points. Instrument response, baseline offsets, measurement
+noise, and an incomplete scientific hypothesis can add further structure. The task is an
+inverse problem: the researcher observes the combined response and asks which smaller set of
+processes could have produced it (van Stokkum et al., 2004).
 
 A useful first hypothesis is that each contribution has two parts. Its *temporal
 contribution* describes how its strength changes with delay, while its *associated spectrum*
@@ -76,8 +39,7 @@ describes how strongly it appears at each wavelength. With two contributions, th
 one point can be understood as the first temporal value multiplied by its spectral value,
 plus the corresponding product for the second contribution, plus unexplained variation.
 Repeating this construction over all sampled points gives two contribution surfaces whose
-sum approximates the observed surface. Figure 1 shows this idea without yet introducing the
-matrix notation used in Section 4.
+sum approximates the observed surface. Figure 1 shows this idea.
 
 ```mermaid
 flowchart LR
@@ -104,10 +66,9 @@ flowchart LR
 **Figure 1. A separable modeling hypothesis for a time-by-wavelength observation.** Arrows
 from each profile and spectrum denote multiplication into a contribution surface; arrows
 from the two surfaces and unexplained variation denote addition; the final arrow denotes
-approximation of the measurement. The diagram does not assert a uniquely identified
-mechanism or claim that every dataset is separable.
+approximation of the measurement.
 
-Separability is thus a modeling assumption rather than a property established merely by
+Separability is a modeling assumption rather than a property established merely by
 recording two axes. Wavelength-dependent instrument behavior can modify temporal shapes,
 and different combinations of profiles and spectra can sometimes reproduce the same
 observations. The latter difficulty is *identifiability*: whether the available measurements
@@ -130,8 +91,7 @@ measurement and revised when its remaining structure or physical interpretation 
 inadequate. *Global analysis* supports that comparison by analyzing measurements
 simultaneously under shared model structure. For example, temporal behavior may be estimated
 from all wavelengths rather than by fitting each wavelength independently (van Stokkum et
-al., 2004). Here *global* describes a scientific strategy. It must not be confused with the
-software's *global dimension*, a coordinate role introduced in Section 3.
+al., 2004).
 
 *Target analysis* asks a more specific question: whether a proposed physicochemical model
 can account for the observations and yield interpretable states, rates, or spectra. A kinetic
@@ -145,16 +105,9 @@ Both strategies belong to an iterative process of scientific model discovery. A 
 first specifies a candidate explanation, estimates its unknown quantities, and then validates
 the result. Validation includes more than checking one error number: residual patterns,
 parameter precision, agreement with prior knowledge, and the physical plausibility of fitted
-contributions can all motivate revision. The revised model is then estimated and examined
-again. TIMP described this as a cycle of model formulation, fitting, and validation, and the
-2023 pyglotaran account retained the same scientific organization (Mullen & van Stokkum,
-2007; van Stokkum et al., 2023).
-
-This recurring cycle creates a software requirement. Scientific contributions must be
-changeable without rebuilding data handling, estimation, and inspection for every candidate
-model. Reusable building blocks are valuable only when their meanings and assumptions remain
-visible enough to criticize. The need to combine reuse with inspection links the scientific
-problem to the software lineage.
+contributions can all motivate revision. TIMP described this as a cycle of model formulation,
+fitting, and validation, and the 2023 pyglotaran account retained the same scientific
+organization (Mullen & van Stokkum, 2007; van Stokkum et al., 2023).
 
 ### 1.3 Lineage of responsibilities
 
@@ -173,14 +126,8 @@ computational core (Snellenburg et al., 2012).
 Pyglotaran was subsequently developed as a complete Python rewrite of the Glotaran/TIMP
 computational core. The desktop graphical interface was not recreated as part of that core.
 Instead, notebook-centered work and the wider Python ecosystem became the surrounding
-environment for combining analysis, narrative, and visualization. Jupyter notebooks are
-external scientific workspaces that call pyglotaran; they are not a component inside its
-optimizer. The published 2023 account documents this predecessor lineage and ecosystem
-shift, while its v0.7-era class names are not evidence for the inspected staging
-implementation (van Stokkum et al., 2023).
-
-Figure 2 separates the historical transfer of computational responsibility from the
-run-time relationships among the earlier tools.
+environment for combining analysis, narrative, and visualization. The published 2023 account
+documents this predecessor lineage and ecosystem shift (van Stokkum et al., 2023).
 
 ```mermaid
 flowchart LR
@@ -204,10 +151,6 @@ flowchart LR
 arrows denote run-time use or orchestration. Dashed arrows denote a historical transfer or
 reimplementation of responsibility, not continuity of an application programming interface.
 
-The present architecture can now be examined as a response to the same recurring need:
-compose a scientific explanation, estimate it against observations, inspect the evidence,
-and revise it without coupling every contribution to a separate analysis program.
-
 ## 2. Separating scientific definitions from execution
 
 ### 2.1 Why divide the package into responsibilities?
@@ -227,9 +170,8 @@ to an analysis separately from the changing numerical state of one fit. Such a
 without prescribing a line-by-line execution sequence. It can be inspected or serialized
 before measurements and current parameter values are supplied. The distinction is not
 absolute isolation: an in-memory dataset specification can hold a data-source association or
-a loaded array. The important separation is one of meaning and responsibility. A definition
-of which contributions apply to a dataset is not the same thing as the observed values, and
-a parameter label in that definition is not the same thing as its current fitted value.
+a loaded array. A definition of which contributions apply to a dataset is not the same thing
+as the observed values.
 
 Named definitions also permit reuse. A kinetic contribution can be defined once in a model
 library and referenced by several dataset specifications. An experiment can coordinate
@@ -237,35 +179,23 @@ several such datasets without duplicating the shared definition. Current global-
 target-analysis examples use the same overall structure—library, experiments, datasets, and
 element references—while changing the scientific definitions and restrictions inside it.
 Global and target analysis are therefore compositions of scientific structure, not separate
-architecture roots or separate optimizer modes. The modular reuse has an earlier published
-rationale (van Stokkum et al., 2023); the present source supplies the authoritative staging
-names and relationships.
+architecture roots. The modular reuse has an earlier published rationale (van Stokkum et al.,
+2023).
 
 Reuse requires a common boundary between scientific contributions and numerical machinery.
 In the inspected implementation, different `Element` types implement a shared responsibility:
 given a resolved per-dataset specification and relevant coordinates, they can provide labeled
-matrix content; they can also construct contribution-specific result data. Section 4 explains
-how these contributions are combined numerically, and Section 5 explains result creation. At
-this point, the architectural consequence is enough: the central estimator can depend on a
-common contribution contract rather than on the internal scientific fields of every kinetic,
-spectral, or instrumental component.
+matrix content; they can also construct contribution-specific result data. The central
+estimator can therefore depend on a common contribution contract rather than on the internal
+scientific fields of every kinetic, spectral, or instrumental component.
 
-The same division locates the package within a wider scientific environment. Core
-pyglotaran owns typed analysis specifications, explicit-parameter handling, reference
+Core pyglotaran owns typed analysis specifications, explicit-parameter handling, reference
 binding, numerical realization, optimization, simulation, results, and extension registries.
-NumPy, SciPy, xarray, and related libraries supply numerical and labeled-array foundations.
-The `pyglotaran-examples` repository demonstrates complete analyses.
-`pyglotaran-extras` is a separate package whose stated purpose is supplementary plotting and
-higher-level exploration. Notebooks can coordinate these tools and combine calculations with
-scientific narrative, but Jupyter remains an external working environment rather than an
-internal optimizer component.
 
 These boundaries make scientific definitions more reusable and the specification more
 inspectable, but they move complexity into coordination. Labels must be connected to the
 objects and parameters they denote; compatible contribution types must be determined; and
-incoherent combinations should be reported before numerical estimation. The motivations
-therefore become concrete in the network of owned objects and named references rooted at the
-analysis specification.
+incoherent combinations should be reported before numerical estimation.
 
 ### 2.2 A network of connected scientific definitions
 
@@ -280,9 +210,7 @@ responsibilities and validity rules are not conveyed by indentation alone.
 The root of this graph is the analysis specification represented by `Scheme`. Its principal
 structural fields are a mapping of experiments and a `ModelLibrary`. The root gives these
 parts a common scope and supplies the user-facing optimization entry point, but it is not a
-universal container for measured arrays and current parameter values. This narrow meaning is
-important: a scheme declares the analysis structure, while a particular fit also needs
-runtime inputs.
+universal container for measured arrays and current parameter values.
 
 The model library owns scientific definitions by label. Each value is a typed `Element`, so
 a short name such as `parallel` or `target` can refer to a complete contribution definition.
@@ -296,41 +224,31 @@ An experiment is the joint-analysis boundary represented by `ExperimentModel`. I
 labeled mapping of one or more dataset specifications and holds configuration that applies
 to their coordinated analysis. The name *Experiment* is architectural: it need not imply
 that every contained array was acquired in one physical run. It says that the dataset
-specifications are intended to participate in one joint analysis. The mechanics for aligning
-and linking several measured arrays are deferred to Section 3.
+specifications are intended to participate in one joint analysis.
 
 Each entry in the experiment's dataset mapping is a `DataModel`. Despite the familiar word
 *data*, this object is a per-dataset scientific specification, not the measured numerical
 array. It identifies ordinary `elements`, may identify `global_elements`, and can contain
 typed settings contributed by those elements, together with scales, weights, and a data
-source association. The scientific meanings of dimensions, weights, and scales belong to
-Section 3. Here the key point is that the object describes how one labeled dataset is to be
-modeled.
+source association.
 
 At runtime a data model may carry a source reference or an associated labeled array. The
 fit entry point loads or normalizes separately supplied datasets and associates them with
 matching specifications before optimization starts; loading a serialized specification can
-also follow a stored source reference. The distinction is therefore semantic rather than
-absolute isolation: a `DataModel` says how observations participate in the analysis,
-whereas the xarray object contains the observed values.
+also follow a stored source reference.
 
 An `Element` is the smallest common scientific contribution in this graph. Its concrete type
 determines which scientific fields it carries, while its shared interface allows the
 numerical path to ask for labeled matrix content and later for element-specific result data.
 An element can also declare additional fields required in a compatible data model. This
 allows heterogeneous contributions to extend the scientific vocabulary while retaining one
-dataset-specification boundary. The term describes a software role; it does not imply that
-one element necessarily equals one physical species or one uniquely identifiable process.
+dataset-specification boundary.
 
 Measured arrays and explicit parameter values stand beside this declarative graph. The
 method `Scheme.optimize(parameters, datasets, ...)` requires both as arguments. Measured
 arrays are matched to dataset labels, while named explicit parameters are connected to
-parameter-bearing fields during resolution. Section 3 defines the computational categories
-of explicit parameters and conditionally linear parameters. For the static graph, the
-important invariant is that `Parameters` holds the former and does not contain the latter.
-
-Figure 3 maps ownership, stored references, and separately supplied fit inputs before any
-parameter-dependent matrix is calculated.
+parameter-bearing fields during resolution. For the static graph, the important invariant is
+that `Parameters` holds explicit parameters and does not contain conditionally linear ones.
 
 ```mermaid
 flowchart TB
@@ -362,20 +280,11 @@ flowchart TB
 
 **Figure 3. Static analysis object graph and separately supplied runtime inputs.** Solid
 arrows denote ownership, dashed arrows denote a stored name or scientific reference, and
-thick arrows denote association or binding at the fit boundary. A data-source association
-does not make the per-dataset specification identical to the measured array.
+thick arrows denote association or binding at the fit boundary.
 
-Figure 3 separates three relationships that can look alike in serialized text. A `Scheme`
-owns its library and experiment mapping; an experiment in turn owns dataset specifications,
-and the library owns elements by label. A data model normally refers to elements by their
-library labels rather than owning copies. At fitting time, the dataset mapping and explicit
-parameter collection arrive through the invocation boundary. Conflating these edges would
-hide whether a value is reusable definition, per-dataset configuration, or changing runtime
-state.
-
-Table 1 summarizes the same graph by responsibility. “Produces or enables” describes the
-next architectural boundary rather than claiming that every entity independently performs a
-fit.
+Conflating these edges would hide whether a value is reusable definition, per-dataset
+configuration, or changing runtime state. Table 1 summarizes the same graph by
+responsibility.
 
 **Table 1. Core entities and responsibilities in the inspected staging architecture**
 
@@ -389,12 +298,6 @@ fit.
 | Measured data | Labeled observed values and coordinates | Dataset label/source metadata | Numerical observations once associated | Supplied or loaded separately from the scheme's structural fields |
 | Explicit parameter collection (`Parameters`) | Named explicit parameter objects and metadata | Expression dependencies among parameters | Current values for bound parameter fields | It contains explicit parameters, not conditionally linear coefficients |
 
-The table also exposes why no directory listing can explain the architecture. Responsibilities
-cross module boundaries: typed construction, library composition, item-field inspection, and
-optimization initialization cooperate to turn the graph into a coherent runtime input. The
-next question is therefore not where a class file resides, but how a human-readable name is
-connected to what it denotes.
-
 ### 2.3 Connecting names and checking meaning
 
 Human-readable labels are useful only if the runtime can connect each one unambiguously and
@@ -405,10 +308,7 @@ Elements rather than remaining an untyped dictionary.
 
 The library context matters because an Element type can contribute specialized per-dataset
 fields. The constructor examines the ordinary and global Elements named by a dataset,
-combines their declared capabilities, and validates the resulting typed DataModel. Section 6
-explains how installation and registries supply extension types; here the relevant fact is
-that extensibility changes the declarative vocabulary without changing the role of a data
-model.
+combines their declared capabilities, and validates the resulting typed DataModel.
 
 Library extension labels are connected during `ModelLibrary` construction. The
 implementation repeatedly selects definitions whose dependencies have already been
@@ -427,8 +327,7 @@ Parameter binding also limits which explicit parameters participate. Optimizatio
 with an empty internal collection, copies a named parameter when a scientific field refers
 to it, and recursively adds expression dependencies. In the running example, an Element can
 name a temporal rate field, and binding connects that label to the matching explicit
-`Parameter`; unrelated entries from a larger parameter file need not participate. Section 3
-distinguishes free outer values from other explicit parameters.
+`Parameter`; unrelated entries from a larger parameter file need not participate.
 
 Typed construction and binding can reveal several kinds of incoherence. Declared field
 types reject malformed or unexpected values. A missing explicit-parameter reference fails
@@ -440,14 +339,8 @@ scientific adequacy of a physicochemical model.
 
 After these operations, names have types and referents, but there is still no fixed numerical
 matrix. Element matrix calculation requires measured coordinates and current parameter
-values. Data orientation, alignment, and parameter roles are established in Sections 3–4,
-and parameter-dependent matrices are evaluated along the numerical path. Reference
-resolution therefore makes the scientific specification coherent without prematurely
-turning it into one immutable numerical object.
-
-Table 2 now consolidates the terms after their scientific and architectural roles have been
-developed. Current classes remain implementation anchors rather than definitions of the
-science.
+values. Table 2 consolidates the terms introduced so far. Current classes remain
+implementation anchors rather than definitions of the science.
 
 **Table 2. Terminology concordance**
 
@@ -462,10 +355,6 @@ science.
 | Data model | Per-dataset scientific specification and data association | `DataModel` or an Element-contributed subtype | It is not the measured xarray object |
 | Measured data | Labeled observed values and coordinates | Usually an xarray dataset supplied or loaded separately | It does not define which scientific contributions apply |
 | Reference resolution | Connecting a name to the Element or explicit parameter it denotes before numerical work | Experiment, DataModel, and item-resolution helpers | It is not compilation and does not construct a permanent matrix |
-
-The specification is now typed, connected, and checked at the level supported by the
-current implementation. The next boundary gives labeled observations and the two distinct
-kinds of unknowns their numerical roles.
 
 ## 3. Giving observations and unknowns numerical roles
 
@@ -482,12 +371,7 @@ labels remain available for later interpretation.
 
 Those observations must remain distinct from the scientific instructions for using them. A
 data model states which scientific contributions apply to one dataset and can configure
-element scales, weights, optional global contributions, and a residual-function field. In the
-inspected implementation this responsibility is represented by `DataModel`. A resolved
-runtime copy can carry an associated Dataset or source path, but the association does not
-make the DataModel itself the measured data. The distinction is comparable to that between a
-recipe and the ingredients placed beside it: attaching the ingredients to the recipe for
-one calculation does not turn the instructions into observations.
+element scales, weights, optional global contributions, and a residual-function field.
 
 The labels also determine two coordinate *roles*. The **model dimension** is the coordinate
 along which a model matrix is evaluated. The **global dimension** is the coordinate across
@@ -502,24 +386,19 @@ dimension and must agree on it; the other dimension of the measured `data` varia
 inferred as global. The numerical wrapper then obtains both coordinate arrays by name. If the
 stored dimension order is the reverse of model-then-global, it transposes a copy before
 estimation. Thus a file need not happen to store time along its first memory axis for time to
-serve as the model dimension. Labels provide the meaning, and orientation converts that
-meaning into the ordering expected by the numerical path.
+serve as the model dimension.
 
 Orientation is followed by *slicing*: exposing the data in pieces suited to the calculation.
 In the usual path, each global coordinate supplies one vector along the model axis. For the
 spectroscopy example, the inner calculation therefore receives one time trace at each
 wavelength. Some supported contribution types instead use one combined, flattened layout.
-Section 4 treats that exception separately so the convenient teaching orientation is not
-mistaken for a universal internal matrix shape.
 
 A **weight** changes how strongly selected observations influence the mismatch being fitted.
 Weights can be supplied as an xarray variable or constructed from values assigned to
 intervals of the model and global coordinates. The numerical wrapper multiplies the observed
 values by these factors, while matrix construction applies matching factors to the calculated
 contributions. A factor greater than one therefore makes a discrepancy count more strongly;
-a factor below one reduces its influence. Because the factors can vary over both axes and can
-be flattened on the specialized path, Section 4 represents weighting by a general operation
-rather than assuming one fixed matrix multiplication.
+a factor below one reduces its influence.
 
 A **scale** answers a different question. It changes the magnitude of a calculated
 contribution or dataset block, rather than directly specifying how residual entries are
@@ -528,9 +407,6 @@ Experiment can scale a dataset's matrix block before linked blocks are joined. S
 may themselves refer to explicit parameters. Keeping “scale” and “weight” separate is
 scientifically useful: the former belongs to the prediction being compared, whereas the
 latter changes the relative influence of discrepancies.
-
-Once one labeled array has been oriented and weighted, the next question is how several
-related arrays can enter one coordinated analysis.
 
 ### 3.2 Joint organization across datasets
 
@@ -564,16 +440,11 @@ This distinction is reflected in two numerical representations. An objective wit
 dataset uses `OptimizationData`, which supplies its axes, weights, and coordinate-wise data
 vectors. An objective with several datasets uses `LinkedOptimizationData`, which additionally
 records aligned coordinates, participating-dataset combinations, source indices, block
-sizes, and dataset scales. These wrappers build numerical inputs; they do not replace the Experiment or
-its DataModels as scientific specifications.
+sizes, and dataset scales.
 
 Alignment alone does not establish that quantities should be shared. That decision comes
 from common CLP labels, configured relations, element definitions, and other model choices
-discussed in Section 4. Likewise, simultaneous fitting is an instance of global analysis only
-because measurements are analyzed under shared scientific structure, not merely because the
-software has an axis called global. Once the observed blocks are coordinated, a different
-question remains: which unknown quantities belong to the outer fit, and which can be
-estimated inside it?
+discussed in Section 4.
 
 ### 3.3 Explicit parameters and conditionally linear coefficients
 
@@ -581,8 +452,8 @@ Some unknown quantities determine the shapes calculated by a scientific contribu
 whereas others only choose how much of each already-calculated shape is present. In the
 running example, a decay-rate constant changes a temporal profile. Once that profile is
 known, its amplitude at one wavelength can be found by an ordinary linear combination. This
-computational distinction motivates two separate representations rather than one undifferentiated
-list of “fit parameters”.
+computational distinction motivates two separate representations rather than one
+undifferentiated list of “fit parameters”.
 
 An **explicit parameter** is a named, serializable quantity whose current value is supplied
 to the scientific definitions. The `Parameter` representation includes metadata such as
@@ -619,9 +490,7 @@ shapes are fixed. The categories concern estimation structure, not scientific im
 For the two-contribution example, the rate constants and instrument-response quantities can
 be explicit outer parameters because they determine the temporal profiles. The two spectral
 amplitudes at each wavelength are CLPs because, for fixed profiles, they enter as
-multipliers. The resulting separation raises the mathematical question answered next: how
-can pyglotaran solve those inner coefficients during every trial of the explicit outer
-parameters?
+multipliers.
 
 ## 4. Exploiting conditional linearity during estimation
 
@@ -644,9 +513,7 @@ Here \(i=1,\ldots,n_t\) indexes sampled delays, \(j=1,\ldots,n_\lambda\) indexes
 wavelengths, and \(y(t_i,\lambda_j)\) is one measured signal. The vector
 \(\boldsymbol{\theta}\) contains the free explicit outer parameters that determine the
 profiles, while \(\varepsilon_{ij}\) collects measurement noise and model mismatch not
-explained by the two contributions. The equation does not assert that two components are
-uniquely identifiable. It says that, under the proposed model, each measured value is
-approximated by adding shape-times-amplitude products.
+explained by the two contributions.
 
 For the running example, if the same temporal-shape matrix applies at every wavelength,
 stacking all measured values gives the convenient full-surface form
@@ -696,10 +563,6 @@ can also vary along the global coordinate before one matrix is selected for an i
 Thus \(k_u\) counts effective columns after supported composition and transformation; it is
 not necessarily the sum of columns returned independently by every Element.
 
-Separability is useful here because it exposes two computational tasks with different
-algebra. Its identifiability limits remain those established in Section 1
-(van Stokkum et al., 2004).
-
 ### 4.2 Inner coefficient estimation
 
 For one trial value of \(\boldsymbol{\theta}\), the temporal or other model-dimension
@@ -727,14 +590,13 @@ squares, and takes the square root. Its square is therefore the sum of squared w
 discrepancies. Physically, the inner solve chooses the spectral or other amplitudes that best
 combine the trial shapes in that realized block.
 
-The general weighting symbol is deliberate. In the ordinary path, pyglotaran multiplies
-observations by entry-wise weights when numerical data are initialized and applies matching
-weights to matrix contributions when they are calculated. In a specialized global-element
-path, weights and data are transposed and flattened. For linked datasets, participating
-model-axis vectors and matrix blocks are joined at each aligned global coordinate, with
-configured dataset scales applied to their respective matrix blocks. A single
-\(\mathcal{W}_u\) captures the shared mathematical intention without claiming that all
-cases are implemented as one left-multiplication matrix.
+In the ordinary path, pyglotaran multiplies observations by entry-wise weights when
+numerical data are initialized and applies matching weights to matrix contributions when
+they are calculated. In a specialized global-element path, weights and data are transposed
+and flattened. For linked datasets, participating model-axis vectors and matrix blocks are
+joined at each aligned global coordinate, with configured dataset scales applied to their
+respective matrix blocks. A single \(\mathcal{W}_u\) captures the shared mathematical
+intention without claiming that all cases are implemented as one left-multiplication matrix.
 
 Before the inner solver is called, supported CLP relations and zero/only constraints reduce
 the labeled matrix at the global coordinate where they apply. A relation such as “target is
@@ -742,9 +604,8 @@ a factor times source” merges the target column into the source column and rem
 dependent target from the reduced problem. A zero or only constraint removes an affected
 column where its interval rule applies. After estimation, the runtime expands the CLP vector
 back to the full label set, placing zeros or reconstructed related values in their
-appropriate positions. In the equation, these transformations are part of the
-qualified constraint set \(\mathcal{C}_u\); the notation must not be read as support for
-arbitrary constraints.
+appropriate positions. These transformations are part of the constraint set
+\(\mathcal{C}_u\).
 
 At every outer trial, the default strategy solves the linear coefficients afresh and leaves
 them out of the outer search vector. This elimination is **variable projection**. The
@@ -762,9 +623,6 @@ when the full CLP labels are restored, but a relation-reconstructed target inher
 relation factor and can be negative if that factor is negative. NNLS is therefore a
 reduced-system restriction, distinct from the logarithmic positivity transformation for
 explicit outer parameters, and its scientific use still requires justification.
-
-Whichever inner estimator is selected, its weighted residual becomes the evidence used by
-the remaining outer update.
 
 ### 4.3 Outer least squares, penalties, and uncertainty
 
@@ -791,12 +649,11 @@ schematic objective that includes all realized inner units \(u\) and penalty res
 
 The estimate \(\widehat{\boldsymbol{\theta}}\) is the outer-parameter vector that gives the
 smallest represented mismatch within the feasible domain \(\Theta\). That domain includes
-applicable bounds and the consequences of fixed, expression-defined, and positivity-transformed
-explicit parameters. For each \(u\), \(\mathbf{r}_u\) is the residual contribution after
-the inner coefficient estimate. The operator \(\operatorname{concat}_u\) places those
-vectors end to end. The vector \(\mathbf{p}\) contains supported soft-penalty residuals and
-can depend indirectly on \(\boldsymbol{\theta}\) through the fitted CLPs. The Euclidean
-norm was defined in the inner problem; its square again gives a sum of squared entries.
+applicable bounds and the consequences of fixed, expression-defined, and
+positivity-transformed explicit parameters. For each \(u\), \(\mathbf{r}_u\) is the residual
+contribution after the inner coefficient estimate. The operator \(\operatorname{concat}_u\)
+places those vectors end to end. The vector \(\mathbf{p}\) contains supported soft-penalty
+residuals and can depend indirectly on \(\boldsymbol{\theta}\) through the fitted CLPs.
 
 The displayed sum explains the mathematical intention rather than naming a scalar object
 constructed by pyglotaran. In the current path, each objective concatenates its data
@@ -805,7 +662,6 @@ but its residual is a configured weight times the difference between sums of abs
 samples over selected intervals. It is proportional to a coordinate area only under
 additional spacing assumptions. The top-level callback concatenates these entries with the
 vectors from all Experiment objectives and gives the result to SciPy's `least_squares`.
-Squaring and summing are consequences of that routine's contract.
 
 The timing of recalculation is also visible here. Numerical data wrappers, aligned
 coordinates, and linked-group definitions are created when an `OptimizationObjective` is
@@ -836,9 +692,6 @@ count uses the sum of two label-axis sizes although the fitted coefficient array
 product. Consequently, degrees of freedom and uncertainty-related fields are current runtime
 diagnostics with path-specific limitations, not general statistical guarantees. They warrant
 maintainer review before quantitative uncertainty interpretation.
-
-Figure 4 follows one outer trial through matrix construction, the inner coefficient solve,
-and return of the residual vector.
 
 ```mermaid
 flowchart LR
@@ -877,16 +730,10 @@ flowchart LR
 
 **Figure 4. Nested estimation from trial explicit parameters to an outer residual vector.**
 Solid arrows carry numerical values or configured transformations. The dashed return arrow
-means that the outer least-squares routine proposes another trial; it does not imply that
-parameter-dependent matrices are retained between trials. Plain-language responsibilities
-are primary, with current implementation anchors shown in parentheses.
+means that the outer least-squares routine proposes another trial.
 
-Figure 4 emphasizes why the two kinds of unknowns remain separate. Trial outer values
-determine labeled matrices. Those matrices and the oriented observations enter an inner
-variable-projection or NNLS solve. Data residuals and supported penalty entries then form the
-vector judged by the outer routine, whose next proposal closes the loop. Relations,
-constraints, weights, and scales are transformations at particular edges, not a third
-optimizer.
+Relations, constraints, weights, and scales are transformations at particular edges, not a
+third optimizer.
 
 **Table 3. Mathematics-to-code concordance for nested estimation**
 
@@ -904,10 +751,6 @@ optimizer.
 | \(\mathbf{r}_u\) | Weighted data mismatch returned for outer least squares | `OptimizationEstimation.residual` concatenated by `OptimizationObjective.calculate` | Recomputed for every outer trial |
 | \(\mathbf{p}\) | Soft-condition residual entries | Weighted differences between sums of absolute CLP samples for the implemented equal-area condition | Appended to data residuals when configured |
 | \(\operatorname{concat}\), \(\|\cdot\|_2^2\) | One vector whose squared entries define the outer least-squares mismatch | NumPy concatenation followed by SciPy `least_squares` | Connects all objectives and penalties to the outer iteration |
-
-The equations now describe the work performed during one objective evaluation and how
-successive trials are connected. The next section places that repeated calculation within
-the complete lifecycle from a resolved analysis specification to an inspectable result.
 
 ## 5. From a resolved specification to evidence for validation
 
@@ -927,9 +770,7 @@ inputs: the Scheme, explicit `Parameters`, and measured data or references from 
 data can be loaded. The dataset input is first normalized into a mapping and assigned to
 the matching per-dataset specifications. Thus, for the running time-and-wavelength
 example, the measured surface is associated with its DataModel before the optimization
-orchestrator is created. Data loading is not an operation hidden inside each numerical
-trial. It occurs at the orchestration boundary, while the Scheme continues to describe
-which Experiment and Element definitions apply to that surface.
+orchestrator is created.
 
 Construction of `Optimization` begins the one-time semantic phase. Each Experiment is
 resolved against the model library and the supplied initial parameters. During this step,
@@ -940,8 +781,8 @@ when any are reported. Only after binding and this separate issue pass does it c
 `OptimizationObjective` for each Experiment.
 An objective creates either a numerical wrapper for one dataset or a linked wrapper when
 the Experiment contains several dataset specifications. Dimension inference, orientation,
-weight preparation, and alignment therefore belong to initialization of these wrappers,
-as described in Section 3, rather than to every outer trial.
+weight preparation, and alignment therefore belong to initialization of these wrappers
+rather than to every outer trial.
 
 The outer problem is configured from the free explicit-parameter labels, their initial
 values, and their bounds. The selected least-squares method and termination tolerances are
@@ -958,17 +799,13 @@ estimator obtains the conditionally linear parameters (CLPs) for the current out
 Where needed for supported CLP penalties, reduced estimates are mapped back to the
 corresponding coefficient labels. Residual entries and applicable penalty entries are
 combined within the objective. Finally, the contributions from all Experiment objectives
-are concatenated into one vector and returned to SciPy. This is the repeated phase:
-parameter-dependent matrices, CLP estimates, and residuals change together as the outer
-parameters change. Section 4 explains the mathematics of this nesting; the temporal view
-here establishes when those operations occur.
+are concatenated into one vector and returned to SciPy.
 
 SciPy uses the returned vector to choose another trial or to stop according to its method,
 tolerances, and evaluation limit. Pyglotaran captures the termination message and, when
 enabled, the textual iteration report from which an optimization-history table can be
-constructed. These records describe the numerical run; they do not by themselves
-guarantee convergence to a unique solution. A clean termination, a small residual, and a
-physically convincing interpretation remain different questions.
+constructed. A clean termination, a small residual, and a physically convincing
+interpretation remain different questions.
 
 After the outer call stops, the implementation evaluates the final state again and asks
 each objective to construct its results. One objective corresponds to one Experiment, but
@@ -980,9 +817,6 @@ SciPy output. Back in `Scheme.optimize(...)`, the supported standard-error calcu
 described in Section 4 is assigned to optimized explicit parameters when available. Only
 then is the top-level `Result` constructed from the Scheme, initial and optimized
 parameters, diagnostics, and dataset-keyed numerical results.
-
-Figure 5 separates one-time association and initialization from repeated residual
-evaluation and post-optimization result construction.
 
 ```mermaid
 flowchart TD
@@ -1024,19 +858,13 @@ flowchart TD
 **Figure 5. Runtime lifecycle from declared analysis to structured result.** Solid arrows
 show normal execution order and the two numerical directions at the optimizer boundary:
 SciPy supplies trial outer values, while pyglotaran returns a residual vector. The dotted
-arrow leaves that cycle on termination or a handled failure. The three groups distinguish
-one-time association, resolution, and initialization from repeated objective evaluation
-and post-optimization result construction. In particular, the figure does not imply that
-parameter-dependent matrices are prepared once.
+arrow leaves that cycle on termination or a handled failure.
 
 Figure 5 also locates two failure boundaries. Missing or incoherent relationships detected
 during binding or the subsequent issue checks prevent numerical objectives from being
-created. A failure
-during the outer call can instead be raised or converted into a terminated run according
-to the configured exception behavior, after which the package still attempts to describe
-the final available state. The lifecycle therefore makes error context and phase as
-important as the mere fact that a numerical vector was returned. Its scientific value
-becomes clearer when the contents of that returned structure are examined.
+created. A failure during the outer call can instead be raised or converted into a
+terminated run according to the configured exception behavior, after which the package
+still attempts to describe the final available state.
 
 ### 5.2 Results, provenance, persistence, and validation
 
@@ -1074,8 +902,7 @@ inspected implementation.
 the local sensitivity fields qualified in Section 4. Its `ParameterHistory` receives one
 initialization snapshot on the inspected optimization path; it is not an iteration-by-
 iteration parameter trajectory. `OptimizationHistory` is parsed from captured SciPy text
-and can be empty when that text is unavailable. These records document aspects of a run
-without repairing the path-specific statistical limitations already described.
+and can be empty when that text is unavailable.
 
 The result structures can be converted into related files and loaded later; this is
 **persistence**. `Result.save(...)` dispatches through a project-I/O provider, while arrays
@@ -1093,20 +920,13 @@ Serialization also exposes the currently running pyglotaran version through a co
 field. On reload, that value is recomputed from the reader's environment rather than
 retained as an immutable creation-version record.
 
-These structures support the validation stage of scientific model discovery without
-automating it. A researcher can inspect residual patterns, compare fitted contributions,
-consider parameter precision, and ask whether the recovered temporal and spectral shapes
-are compatible with the proposed physicochemical model (van Stokkum et al., 2004). The
+A researcher can inspect residual patterns, compare fitted contributions, consider
+parameter precision, and ask whether the recovered temporal and spectral shapes are
+compatible with the proposed physicochemical model (van Stokkum et al., 2004). The
 architecture makes those questions answerable from structured outputs without automating
-the judgment. Core pyglotaran supplies the arrays and metadata for that assessment. Most
-plotting and higher-level exploration are provided separately by `pyglotaran-extras`,
-often used from an external notebook environment.
-
-Result construction is therefore not merely the last formatting step of optimization. It
-closes one estimation cycle by preserving observations, differences, decompositions, and
-diagnostics that can motivate the next revision of the analysis. Producing comparable
-results for heterogeneous scientific contributions and file formats, however, depends on
-common extension boundaries, which are the subject of the next section.
+the judgment. Result construction closes one estimation cycle by preserving observations,
+differences, decompositions, and diagnostics that can motivate the next revision of the
+analysis.
 
 ## 6. Extending the framework and evaluating its trade-offs
 
@@ -1127,8 +947,6 @@ declared provider modules. Registration code in those modules then adds implemen
 to the appropriate directory. The built-in distribution uses the same mechanism for
 scientifically different Elements such as kinetics, baseline, spectral contributions,
 coherent artifacts, and damped oscillations, as well as several data and project formats.
-Entry-point discovery therefore determines what is available; it does not replace the
-typed responsibilities each provider must implement.
 
 A scientific Element provider supplies a subclass that can calculate a labeled matrix
 contribution and create its contribution-specific result dataset. It may also declare a
@@ -1162,9 +980,8 @@ Registered typing also reaches editor support. The JSON-schema utility construct
 Scheme schema together with a generated DataModel schema based on DataModel subclasses
 loaded in the current process. If explicit parameters are supplied, their labels can be
 inserted as allowed references. This **generated schema** can help an editor offer
-completion and detect some malformed declarations. It reflects currently loaded types;
-it is not an independent model language and does not eliminate runtime reference
-resolution or scientific issue checking.
+completion and detect some malformed declarations. It reflects currently loaded types and
+does not eliminate runtime reference resolution or scientific issue checking.
 
 **Table 4. Extension surfaces in the inspected staging implementation**
 
@@ -1173,9 +990,6 @@ resolution or scientific issue checking.
 | Element registry and `Element` contract | A typed Element class; matrix calculation; contribution-specific result creation; optionally a specialized DataModel type | Resolves the registered type, incorporates contributed dataset fields, composes its matrix through the common numerical path, and adds Element identity to its result dataset | Additional scientific contributions can use the shared optimization and result lifecycle |
 | Data-I/O registry and `DataIoInterface` | Load and/or save behavior for one or more measurement-data format names | Dispatches by registered or inferred format, exchanges xarray labeled arrays, and records source path and provider identity on loaded data | Additional measured-data formats can enter without changing scientific Elements |
 | Project-I/O registry and `ProjectIoInterface` | Load and/or save behavior for Parameters, Schemes, and Results | Dispatches analysis-object persistence, applies overwrite checks, and updates supported source paths | Additional declarative and result formats can represent a related analysis artifact set |
-
-Figure 6 places these three extension contracts between installed providers, the numerical
-core, and the surrounding scientific workflow.
 
 ```mermaid
 flowchart LR
@@ -1235,12 +1049,6 @@ through installation metadata. The three registries mediate different contracts.
 Numerical libraries, notebooks, examples, and extras surround the core rather than
 registering alternative outer optimizers.
 
-Table 4 and Figure 6 show the same separation at two levels. The table states what a
-provider supplies and what the core does with it. The figure adds discovery and the
-external scientific environment. Extensions therefore participate by satisfying a
-specific boundary, while matrix realization, nested estimation, and result assembly
-remain common services.
-
 ### 6.2 Simulation and the surrounding scientific ecosystem
 
 The same scientific definitions can generate expected labeled observations before any fit
@@ -1269,17 +1077,13 @@ emphasized in the published problem-solving-environment account of pyglotaran
 studies and current compositions, including fluorescence, transient-absorption,
 multi-dataset, and damped-oscillation analyses. Such examples establish intended usage at
 the user boundary but do not prove internal runtime behavior. `pyglotaran-extras`
-separately supplies plotting and higher-level exploration conveniences. The boundary is
-therefore functional: core constructs scientific results; notebooks organize a workflow;
-examples demonstrate one; and extras helps inspect it. The next question is what
-coordination costs accompany those separations.
+separately supplies plotting and higher-level exploration conveniences.
 
 ### 6.3 Verified trade-offs
 
 Separating responsibilities controls one kind of complexity by making other coordination
-work explicit. A **trade-off** is such a paired consequence: an architectural choice
-provides a capability while imposing work or constraints elsewhere. The pairs below are
-interpretations of the inspected mechanisms, not performance claims.
+work explicit. The pairs below are interpretations of the inspected mechanisms, not
+performance claims.
 
 First, a declarative network of reusable Elements and dataset specifications makes shared
 scientific structure inspectable and avoids repeating definitions. The corresponding
@@ -1301,8 +1105,7 @@ coefficient problem remains visible to the common runtime.
 Fourth, labeled arrays preserve the meaning of coordinates in observations and results.
 At the numerical boundary, however, dimensions still have to be inferred or declared,
 oriented consistently, sliced, and—where multiple datasets are linked—aligned according
-to configured rules. Labels reduce one source of ambiguity but do not remove numerical
-coordination.
+to configured rules.
 
 Fifth, structured residuals, decompositions, diagnostics, paths, and contribution results
 give a researcher more evidence for validation than a final parameter vector would.
@@ -1313,59 +1116,15 @@ under the selected saving policy.
 Finally, notebook-centered work can combine code, narrative, and many Python tools
 without placing an interactive environment inside the optimizer. It does not reproduce
 every guided affordance of the historical dedicated desktop interface, and reproducible
-use still depends on disciplined recording of inputs and software context. This is a
-workflow consequence, not evidence that one interface is universally preferable.
-
-These paired effects provide the evidence needed for the chapter's final synthesis. The
-conclusion can now assess whether the separations, taken together, support the cycle of
-scientific specification, estimation, inspection, and revision established at the
-outset.
+use still depends on disciplined recording of inputs and software context.
 
 ## 7. Conclusion
 
 The staging architecture is best judged by whether it lets a researcher move from a
 scientific question to a traceable numerical analysis without coupling every possible
-contribution to a bespoke workflow. The running time-and-wavelength example shows why this
-criterion matters. A measured surface contains overlapping signals, instrumental effects,
-noise, and possible model inadequacy; it does not reveal a mechanism directly. Software
-cannot remove that inverse-problem ambiguity. It can, however, keep the assumptions and
-transformations used to interpret the surface visible enough to inspect and revise.
-
-Pyglotaran begins by separating the declarative analysis specification from the changing
-state of a particular fit. A Scheme provides a root for Experiments and a library of
-Elements, while each DataModel states how one labeled dataset is to be modeled. Measured
-xarray values and explicit Parameters enter separately at the fitting boundary. Typed
-instantiation and reference resolution turn stored names into connected runtime objects,
-and supported checks reject some incoherent combinations before numerical estimation. This
-organization favors reuse and inspection, but it also creates coordination work: labels,
-extension chains, contributed types, and parameter references must remain consistent.
-
-The numerical architecture makes a second separation. Explicit outer parameters determine
-matrix shapes, while CLPs determine the amplitudes of those shapes once the outer values are
-fixed. Variable projection or NNLS can therefore solve a reduced inner coefficient problem
-during each trial requested by the outer least-squares routine. Weights, scales, linked dataset
-blocks, coefficient relations, constraints, and penalties modify particular stages of that
-calculation. Some data wrappers and alignment structures are initialized once, but
-parameter-dependent matrices, CLPs, and residuals are recalculated during objective
-evaluation. This timing is essential: the architecture is not a compiler that turns a
-scientific declaration into one immutable matrix.
-
-The returned Result closes an estimation cycle rather than merely reporting an optimal
-vector. It places initial and optimized explicit parameters beside dataset-keyed
-observations, residuals, fitted-data decompositions, diagnostics, and Element-specific
-outputs. These structures can expose where a fit is inadequate and which recovered
-contributions require physical scrutiny. They support validation; they do not automate
-identifiability analysis or establish the truth of a mechanism. Persistence and provenance
-are likewise substantial but qualified responsibilities, because retained fields depend on
-the implemented result schema and saving policy.
-
-Separate Element, data-I/O, and project-I/O registries extend this common lifecycle without
-forming one unrestricted plugin interface. Simulation reuses reference resolution and
-matrix construction without invoking the outer optimizer. Around the core, numerical
-libraries supply array and solver foundations, examples demonstrate compositions,
-notebooks organize external scientific work, and `pyglotaran-extras` supplies most plotting
-and higher-level exploration. These boundaries broaden reuse while making type discovery,
-name conflicts, schema composition, and reproducible workflow practices explicit costs.
+contribution to a bespoke workflow. Software cannot remove the ambiguity of the inverse
+problem. It can, however, keep the assumptions and transformations used to interpret the
+surface visible enough to inspect and revise.
 
 Taken together, the separations form a coherent architecture for iterative model discovery:
 state a scientific hypothesis, bind it to observations and explicit values, realize and
