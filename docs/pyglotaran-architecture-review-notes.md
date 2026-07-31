@@ -211,3 +211,140 @@ describe the inspected implementation, not promised intent.
   the assembled chapter uses final figure numbers in order of appearance.
 
 No deviation was made from the source-authority hierarchy or the terminology contract.
+
+---
+
+## 8. Post-compression accuracy review
+
+Added after the compression pass (commit `cf15163`), which reduced the chapter from 12,300 to
+9,818 words excluding references without removing facts, equations, figures, tables, or
+citations.
+
+**Authority.** Every finding below was verified directly against the pyglotaran source at
+`468c4cd57aaf25c10edf85cd197df771bad0a766`, the revision the chapter cites. Source was treated
+as authoritative; the prior architecture analyses formerly under `docs/architecture/` were used
+only as cross-checks. Line references are to files under `pyglotaran/glotaran/`.
+
+**Tests.** `pytest tests/optimization tests/model tests/project tests/parameter
+tests/plugin_system tests/simulation` — **271 passed, 3 failed, 1 xfailed**. All three failures
+are environment artifacts, not defects: cached bytecode under `tests/**/__pycache__` was
+compiled while this repository lived at `D:\src\...`, so warning-location assertions compare a
+`D:` path against the real `C:` path. Confirmed by inspecting the `.pyc`, which contains
+`D:\src` and no `C:\src`. Clearing `__pycache__` resolves them. Nothing was skipped or
+suppressed to make the review pass.
+
+### 8.1 Findings, most severe first
+
+All eight have been applied to the chapter.
+
+**1. Equal-area penalty formula was incomplete.** The chapter described the residual as "a
+configured weight times the difference between sums of absolute CLP samples." The
+implementation is `|Σ|source| − p·Σ|target|| · weight` (`optimization/penalty.py:47`). Two
+elements were missing: the configured `penalty.parameter` scaling the target sum, and the
+absolute value around the difference. Corrected in §4.3 and in the **p** row of Table 3.
+
+**2. Standard-error multiplier was mis-identified.** The chapter said "the root-mean-square
+residual multiplied by the square root of the corresponding diagonal entry." The multiplier is
+`sqrt(chi_square / degrees_of_freedom)` (`optimization/info.py:176-184`, consumed at
+`info.py:213`), not `sqrt(mean(r²))`. The denominator is the degrees of freedom, which the
+chapter separately and correctly notes is path-dependent, so the reported error inherits that
+limitation. Compounding this, `OptimizationResultMetaData.root_mean_square_error` *is* the
+plain `norm(residual)/sqrt(size)` (`optimization/objective.py:81`): two different quantities
+share the field name. The chapter used it correctly in §5.2 and incorrectly in §4.3. Corrected
+in §4.3, with an explicit note that the two identically named fields differ.
+
+**3. `residual_function` attributed to the wrong object.** The chapter listed it among
+per-dataset DataModel configuration (`model/data_model.py:197`). On the ordinary estimation
+path the estimator is selected from `ExperimentModel.residual_function`
+(`optimization/objective.py:532`, `:556`). The per-dataset field is read at exactly one site,
+`objective.py:654`, inside `create_global_result` — result construction on the specialized
+global path. A reader following the chapter would configure the field that has no effect on
+their fit. Corrected in §3.1 and flagged as a maintainer-review issue.
+
+**4. Relation and constraint reduction presented as universal.** §4.2 stated that relations and
+zero/only constraints reduce the matrix "before the inner solver is called," unqualified.
+`OptimizationObjective.calculate_global_penalty` (`objective.py:549-557`) goes from
+`OptimizationMatrix.from_global_data` straight to estimation: no reduction, no relations, no
+CLP penalties. Corrected in §4.2 with an explicit sentence naming what the global path skips.
+
+**5. `simulate()` signature incomplete.** §6.2 omitted the `ModelLibrary` argument; the
+signature is `simulate(model, library, parameters, coordinates, clp=None, ...)`
+(`simulation/simulation.py:22`), and the library is what makes the resolution step the chapter
+describes possible. Corrected in §6.2.
+
+**6. Minimal saving policy understated.** §5.2 said it "omits selected derived arrays."
+`SAVING_OPTIONS_MINIMAL` (`io/interface.py:76`) filters all six bulk keys: `input_data`,
+`residuals`, `fitted_data`, `elements`, `activations`, `fit_decomposition`. `input_data` is the
+only partial exception, and only because the serializer substitutes the original source path
+when `source_path` and `io_plugin_name` are present. Corrected in §5.2.
+
+**7. Attribution gap on variable projection.** The chapter cited the separable-least-squares
+literature generally. The implementation is specifically Kaufman's algorithm:
+`optimization/variable_projection.py` carries `Kaufman Q2 step 3/4/5` comments and a
+`TODO: Reference Kaufman paper`, over LAPACK `dgeqrf`/`dormqr`/`dtrtrs`. Corrected in §4.2;
+Kaufman (1975) added to the reference list.
+
+**8. Dataset-label collision across Experiments not noted.** §5.1 described results being
+"keyed by dataset label and combined into the top-level mapping" without noting that the
+`ChainMap` merge (`optimization/optimization.py:140`) lets identical labels in different
+Experiments shadow one another. The source carries a `TODO` about exactly this at
+`optimization.py:137`. Corrected in §5.1.
+
+### 8.2 Verified correct, no change needed
+
+Confirmed against source. Several are unusually precise and should survive future edits.
+
+- `covariance_matrix` is a rank-truncated pseudo-inverse of the Jacobian normal matrix and is
+  *not* multiplied by a residual variance; the `root_mean_square_error` argument to
+  `calculate_covariance_matrix_and_standard_errors` is explicitly unused (`info.py:222-244`).
+- On the global-Element path the reported CLP count is the **sum** of the two label-axis sizes
+  while the fitted coefficient array uses their **product** (`objective.py:658` vs `:670`).
+- The `forward` alignment method does not preserve the index of its filtered candidate:
+  `diff.argmin()` indexes the filtered array but is applied to the unfiltered `target_axis`
+  (`optimization/data.py:337-348`). `backward` is safe on an ascending axis because its filter
+  keeps a prefix; `forward` keeps a suffix.
+- `ParameterHistory` receives exactly one snapshot, at `Optimization.__init__`
+  (`optimization.py:93-94`).
+- `element_uid` is added by `create_result_with_uid` (`model/element.py:161`) on the ordinary
+  path only; `create_global_result` assembles its Element dataset directly without one.
+- The weighted residual is written into a local working dataset to compute the weighted error
+  metric and is not a field of `OptimizationResult` (`data.py:244-251`, `objective.py:624`).
+- Degrees of freedom are the full residual-vector length, penalty entries included, minus the
+  outer and CLP counts (`info.py:170-174`).
+- CLP relation reduction: `array @ relation_matrix` adds `parameter × target column` into the
+  source column and deletes the target (`matrix.py:227-242`), consistent with the
+  reconstruction `clp[target] = parameter × clp[source]` (`estimation.py:61-64`).
+- Element labels `parallel` and `target` used as illustrations are real: `parallel` in
+  `glotaran/testing/simulated_data/parallel_spectral_decay.py` and `shared_decay.py`; `target`
+  in `pyglotaran-examples/.../ex_two_datasets/models/model.yml`.
+- Three entry-point groups, first-registration-wins with `PluginOverwriteWarning`, full dotted
+  keys, format suffix on instantiated I/O plugins, and `set_plugin` pinning — all as described
+  (`plugin_system/base_registry.py:112-251`).
+- `non_negative` uses a logarithmic optimizer coordinate and exponentiates on return
+  (`parameter/parameter.py:268-283`); an expression forces `vary = False` (`parameter.py:137`).
+
+### 8.3 Maintainer-review items outside the chapter's claims
+
+Not chapter defects; recorded because they surfaced during verification.
+
+1. `Scheme.optimize(add_svd=...)` is stored as `Optimization._add_svd` and never read. The SVD
+   arrays computed by `add_svd_to_result_dataset` are written into a local working dataset and
+   discarded, since only `.data` and `.residual` are lifted into `OptimizationResult`.
+2. `bounds` are passed to `scipy.optimize.least_squares` unconditionally, including for
+   `method="lm"`, which SciPy does not support with bounds (`optimization.py:118-128`).
+3. `OptimizationInfo.success` is `result is not None` (`info.py:149`): it records that
+   `least_squares` returned, not that it converged.
+4. Stale transitional docstrings remain — `model/experiment_model.py:1` still says "dataset
+   group", and `simulation/simulation.py` still says "megacomplexes". These do not affect the
+   implemented vocabulary but will mislead readers of the generated API documentation.
+
+### 8.4 Open questions added by this review
+
+- Whether the `forward` alignment index behaviour is a defect or an intended selection rule.
+  The chapter states it as a maintainer-review issue rather than a guarantee, which remains the
+  safe wording until confirmed.
+- Whether `DataModel.residual_function` is intended to be authoritative for its dataset — in
+  which case the ordinary path reading the Experiment-level field is the defect — or whether
+  the per-dataset field should be removed.
+- Whether the global-Element CLP count is intended to feed degrees of freedom at all, given
+  that the count and the coefficient array disagree.

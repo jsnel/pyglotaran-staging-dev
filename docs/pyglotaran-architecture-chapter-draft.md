@@ -371,7 +371,12 @@ labels remain available for later interpretation.
 
 Those observations must remain distinct from the scientific instructions for using them. A
 data model states which scientific contributions apply to one dataset and can configure
-element scales, weights, optional global contributions, and a residual-function field.
+element scales, weights, and optional global contributions. It also carries a
+residual-function field, but on the ordinary estimation path the inner estimator is selected
+by the corresponding field on the Experiment; the per-dataset field is consulted only when
+result data are constructed for the specialized global-Element path. The two settings can
+therefore disagree, which is a maintainer-review issue rather than a documented precedence
+rule.
 
 The labels also determine two coordinate *roles*. The **model dimension** is the coordinate
 along which a model matrix is evaluated. The **global dimension** is the coordinate across
@@ -598,21 +603,26 @@ joined at each aligned global coordinate, with configured dataset scales applied
 respective matrix blocks. A single \(\mathcal{W}_u\) captures the shared mathematical
 intention without claiming that all cases are implemented as one left-multiplication matrix.
 
-Before the inner solver is called, supported CLP relations and zero/only constraints reduce
-the labeled matrix at the global coordinate where they apply. A relation such as “target is
+On the ordinary per-coordinate path, supported CLP relations and zero/only constraints reduce
+the labeled matrix at the global coordinate where they apply before the inner solver is
+called. A relation such as “target is
 a factor times source” merges the target column into the source column and removes the
 dependent target from the reduced problem. A zero or only constraint removes an affected
 column where its interval rule applies. After estimation, the runtime expands the CLP vector
 back to the full label set, placing zeros or reconstructed related values in their
 appropriate positions. These transformations are part of the constraint set
-\(\mathcal{C}_u\).
+\(\mathcal{C}_u\). The specialized global-Element path does not perform this reduction: it
+solves the flattened Kronecker-composed problem directly, so relations, constraints, and CLP
+penalties do not apply there in the inspected implementation.
 
 At every outer trial, the default strategy solves the linear coefficients afresh and leaves
 them out of the outer search vector. This elimination is **variable projection**. The
 staging routine uses an unpivoted QR factorization, which assumes that the reduced matrix has
 enough independent rows and a sufficiently well-conditioned, full-column-rank basis. It is
-not a rank-revealing fallback for duplicated or dependent columns. The approach is
-consistent with the separable-least-squares literature
+not a rank-revealing fallback for duplicated or dependent columns. The factorization steps
+follow the simplification of the separable least-squares problem introduced by Kaufman
+(1975), whose algorithm the implementation names directly in its comments. The approach is
+consistent with the wider separable-least-squares literature
 (Mullen & van Stokkum, 2007; van Stokkum et al., 2004), but it is not described here as a
 port of TIMP's partitioned algorithm.
 
@@ -658,9 +668,10 @@ residuals and can depend indirectly on \(\boldsymbol{\theta}\) through the fitte
 The displayed sum explains the mathematical intention rather than naming a scalar object
 constructed by pyglotaran. In the current path, each objective concatenates its data
 residuals. The implementation calls one supported condition an *equal-area* CLP penalty,
-but its residual is a configured weight times the difference between sums of absolute CLP
-samples over selected intervals. It is proportional to a coordinate area only under
-additional spacing assumptions. The top-level callback concatenates these entries with the
+but its residual is a configured weight times the absolute difference between the sum of
+absolute source CLP samples and a configured parameter times the sum of absolute target CLP
+samples, each taken over its own selected interval. It is proportional to a coordinate area
+only under additional spacing assumptions. The top-level callback concatenates these entries with the
 vectors from all Experiment objectives and gives the result to SciPy's `least_squares`.
 
 The timing of recalculation is also visible here. Numerical data wrappers, aligned
@@ -679,8 +690,13 @@ sensitivities; directions in which the residual changes little are corresponding
 to determine from the fit. The implementation reports a rank-truncated inverse of this
 normal matrix and labels the field `covariance_matrix`, although the stored matrix is not
 itself multiplied by a residual variance. A reported **standard error** is intended to
-summarize local parameter uncertainty: here it is the root-mean-square residual multiplied
-by the square root of the corresponding diagonal entry. For a logarithmically transformed
+summarize local parameter uncertainty: here it is the square root of the corresponding
+diagonal entry multiplied by the square root of the reduced chi-square, that is, by the sum
+of squared residual entries divided by the degrees of freedom defined below. Despite the
+field name `root_mean_square_error`, that factor is not the plain root-mean-square residual,
+which would divide by the number of residual entries instead; the per-dataset
+`root_mean_square_error` recorded in a result's metadata is the plain quantity, so the two
+fields sharing this name are not the same number. For a logarithmically transformed
 positive parameter, that error remains in the optimizer coordinate and is not converted to
 the exponentiated physical scale.
 
@@ -749,7 +765,7 @@ third optimizer.
 | \(\mathcal{W}_u\) | Relative influence assigned to residual entries | Dataset/model weights applied to observed values and corresponding matrices, including flattened forms | Data side at wrapper initialization; matrix side during calculation |
 | \(\mathcal{C}_u\) | Supported restrictions on reduced inner coefficients | Matrix reduction for CLP relations and zero/only constraints; nonnegativity of the reduced vector under NNLS | Applied before or within the inner solve; relation-reconstructed targets inherit their factor |
 | \(\mathbf{r}_u\) | Weighted data mismatch returned for outer least squares | `OptimizationEstimation.residual` concatenated by `OptimizationObjective.calculate` | Recomputed for every outer trial |
-| \(\mathbf{p}\) | Soft-condition residual entries | Weighted differences between sums of absolute CLP samples for the implemented equal-area condition | Appended to data residuals when configured |
+| \(\mathbf{p}\) | Soft-condition residual entries | For the implemented equal-area condition, a weight times the absolute difference between the summed absolute source CLPs and a configured parameter times the summed absolute target CLPs | Appended to data residuals when configured |
 | \(\operatorname{concat}\), \(\|\cdot\|_2^2\) | One vector whose squared entries define the outer least-squares mismatch | NumPy concatenation followed by SciPy `least_squares` | Connects all objectives and penalties to the outer iteration |
 
 ## 5. From a resolved specification to evidence for validation
@@ -810,7 +826,9 @@ interpretation remain different questions.
 After the outer call stops, the implementation evaluates the final state again and asks
 each objective to construct its results. One objective corresponds to one Experiment, but
 the returned `OptimizationResult` objects are keyed by dataset label and combined into
-the top-level mapping. This post-processing reconstructs the final matrices, CLPs,
+the top-level mapping. That merge assumes dataset labels are unique across Experiments; the
+inspected implementation carries a maintainer note that identical labels in different
+Experiments would shadow one another. This post-processing reconstructs the final matrices, CLPs,
 residuals, and contribution-specific datasets needed for inspection. It also determines
 counts used in the diagnostic statistics and creates `OptimizationInfo` from the available
 SciPy output. Back in `Scheme.optimize(...)`, the supported standard-error calculation
@@ -909,8 +927,10 @@ The result structures can be converted into related files and loaded later; this
 are serialized through a data-I/O provider. Under the default saving policy, the Scheme,
 initial and optimized parameters, histories, input and residual data, calculated data,
 fit decomposition, and contribution-specific datasets can be written as a related set of
-files. A minimal policy deliberately omits selected derived arrays, so persistence should
-not be described as an unconditional archival guarantee. When measured data were loaded
+files. A minimal policy deliberately filters every one of those bulk arrays—input data,
+residuals, calculated data, fit decomposition, and the Element and activation datasets—so
+persistence should not be described as an unconditional archival guarantee. A result saved
+that way reloads with those fields absent. When measured data were loaded
 through the I/O layer, their `source_path` and fully qualified `io_plugin_name` attributes
 can also be used to retain the relationship to the original source instead of silently
 changing its format. Scheme, parameter, and result paths are updated by the corresponding
@@ -1052,7 +1072,8 @@ registering alternative outer optimizers.
 ### 6.2 Simulation and the surrounding scientific ecosystem
 
 The same scientific definitions can generate expected labeled observations before any fit
-is attempted. This operation is **simulation**. It takes a DataModel, explicit parameters,
+is attempted. This operation is **simulation**. It takes a DataModel, the model library
+against which its references are resolved, explicit parameters,
 coordinates, and either supplied CLPs or a global Element contribution. The
 current `simulate(...)` function resolves the DataModel, determines the model and global
 coordinate roles, constructs `OptimizationMatrix` objects, and combines the matrices
@@ -1135,6 +1156,10 @@ interfaces. Its value lies in making the present route from scientific assumptio
 inspectable numerical evidence explicit enough to question and repeat.
 
 ## References
+
+Kaufman, L. (1975). A variable projection method for solving separable nonlinear least
+squares problems. *BIT Numerical Mathematics, 15*(1), 49–57.
+https://doi.org/10.1007/BF01932995
 
 Mullen, K. M., & van Stokkum, I. H. M. (2007). TIMP: An R package for modeling multi-way
 spectroscopic measurements. *Journal of Statistical Software, 18*(3), 1–46.
