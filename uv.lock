@@ -112,11 +112,11 @@ wheels = [
 
 [[package]]
 name = "asteval"
-version = "1.0.2"
+version = "1.0.9"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/0c/da/f493207c6464bdf9b8112d8ef10d6fc41f2a89ace60ac72434f73d4e4b99/asteval-1.0.2.tar.gz", hash = "sha256:00e27d9dc565858056d04ebf741f9db4dc4ba319ac3517d094b1608e7f73fa6a", size = 49933, upload-time = "2024-08-02T01:33:21.334Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b1/71/bec6758ab41ada3b6870cb194ea16d2e76bb530562c8a8cd7d2167012bea/asteval-1.0.9.tar.gz", hash = "sha256:4f7323d63d9fbf89d7e1d5f8bb59b6c093970c15bb5926e6e67d0195858aa230", size = 55237, upload-time = "2026-06-11T18:40:36.086Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/d4/8992844e41917a83629e93eb282cf65cb51afe74467b0e5501b084bb71ee/asteval-1.0.2-py3-none-any.whl", hash = "sha256:2ece3179809185598d054289e089b8e7706c1a5afa5f7e7c236b3cdae0cf8290", size = 21358, upload-time = "2024-08-02T01:33:19.96Z" },
+    { url = "https://files.pythonhosted.org/packages/fe/d7/a71b12b625c44cfcb95d41397752edccc0a731903081609cffd6720f671d/asteval-1.0.9-py3-none-any.whl", hash = "sha256:60513ea5d608d27bdb0cf3785dc993a6c3adeaee45f1bded0953a09e904e461f", size = 23320, upload-time = "2026-06-11T18:40:35.068Z" },
 ]
 
 [[package]]
